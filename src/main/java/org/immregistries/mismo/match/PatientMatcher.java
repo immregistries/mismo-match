@@ -21,18 +21,24 @@ public class PatientMatcher {
     this.matcherConfig = matcherConfig;
   }
 
-  public PatientMatchDetermination match(Patient patientA, Patient patientB) {
+  public PatientMatchResult match(Patient patientA, Patient patientB) {
+    PatientMatchResult patientMatchResult = new PatientMatchResult();
     PatientCompare patientCompare = new PatientCompare();
     patientCompare.readScript(matcherConfig);
     patientCompare.setPatientA(patientA);
     patientCompare.setPatientB(patientB);
     String result = patientCompare.getResult();
     if (result.equals("Possible Match")) {
-      return PatientMatchDetermination.POSSIBLE_MATCH;
+      patientMatchResult.setDetermination(PatientMatchDetermination.POSSIBLE_MATCH);
     } else if (result.equals("Match")) {
-      return PatientMatchDetermination.MATCH;
+      patientMatchResult.setDetermination(PatientMatchDetermination.MATCH);
+    } else {
+      patientMatchResult.setDetermination(PatientMatchDetermination.NO_MATCH);
     }
-    return PatientMatchDetermination.NO_MATCH;
+    patientMatchResult.setSignatureLevel0(patientCompare.getSignature());
+    patientMatchResult.setSignatureLevel1(patientCompare.getSignature(1));
+    patientMatchResult.setSignatureLevel2(patientCompare.getSignature(2));
+    return patientMatchResult;
   }
 
   public String generateSignature(Patient patientA, Patient patientB) {

@@ -9,7 +9,7 @@ public class PatientMatcherTest {
   @Test
   public void verifyMatchingWorksByDefault() {
     long start = System.currentTimeMillis();
-    int count = 1; //100000;
+    int count = 1; // 100000
 
     for (int i = 0; i < count; i++) {
       PatientMatcher patientMatcher = new PatientMatcher();
@@ -48,25 +48,32 @@ public class PatientMatcherTest {
       daniel2.setBirthDate("20201010");
       daniel2.setMotherMaidenName("Jones");
 
-      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(daniel, daniel));
+      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(daniel, daniel).getDetermination());
 
-      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(michael, michael));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel, michael));
+      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(michael, michael).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel, michael).getDetermination());
 
-      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(michelle, michelle));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel, michelle));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(michelle, michael));
+      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(michelle, michelle).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel, michelle).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(michelle, michael).getDetermination());
 
-      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(mike, mike));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel, mike));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(mike, michelle));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(mike, michael));
+      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(mike, mike).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel, mike).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(mike, michelle).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(mike, michael).getDetermination());
 
-      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(daniel2, daniel2));
-      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(daniel, daniel2));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, mike));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, michelle));
-      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, michael));
+      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(daniel2, daniel2).getDetermination());
+      assertEquals(PatientMatchDetermination.MATCH, patientMatcher.match(daniel, daniel2).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, mike).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, michelle).getDetermination());
+      assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, michael).getDetermination());
+      
+//      System.out.println(patientMatcher.match(daniel, daniel).getSignatureLevel0());
+//      System.out.println(patientMatcher.match(daniel, michael).getSignatureLevel0());
+//      System.out.println(patientMatcher.match(daniel, daniel).getSignatureLevel1());
+//      System.out.println(patientMatcher.match(daniel, michael).getSignatureLevel1());
+//      System.out.println(patientMatcher.match(daniel, daniel).getSignatureLevel2());
+//      System.out.println(patientMatcher.match(daniel, michael).getSignatureLevel2());
 
       if (i % 1000 == 0) {
         System.out.println(i);

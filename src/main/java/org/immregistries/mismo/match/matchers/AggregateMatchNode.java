@@ -14,6 +14,11 @@ import org.immregistries.mismo.match.model.Patient;
  */
 public class AggregateMatchNode extends MatchNode {
   private List<MatchNode> matchNodeList = new ArrayList<MatchNode>();
+  private int level = 1;
+
+  protected int getLevel() {
+    return level;
+  }
 
   public String makeScript() {
     StringBuilder sb = new StringBuilder(super.makeBasicScript());
@@ -30,8 +35,7 @@ public class AggregateMatchNode extends MatchNode {
     return sb.toString();
   }
 
-  public void readScript(String script)
-  {
+  public void readScript(String script) {
     readScript(script, 0);
   }
 
@@ -58,15 +62,11 @@ public class AggregateMatchNode extends MatchNode {
             } else {
               pos = selectedMatchNode.readScript(script, pos);
               int openBrace = 1;
-              while (openBrace > 0 && pos < script.length())
-              {
+              while (openBrace > 0 && pos < script.length()) {
                 char c = script.charAt(pos);
-                if (c == '}')
-                {
+                if (c == '}') {
                   openBrace--;
-                }
-                else if (c == '{')
-                {
+                } else if (c == '{') {
                   openBrace++;
                 }
                 pos++;
@@ -98,6 +98,9 @@ public class AggregateMatchNode extends MatchNode {
   }
 
   public AggregateMatchNode add(AggregateMatchNode matchNode) {
+    if (level <= matchNode.getLevel()) {
+      level = matchNode.getLevel() + 1;
+    }
     matchNodeList.add(matchNode);
     return matchNode;
 
@@ -116,7 +119,7 @@ public class AggregateMatchNode extends MatchNode {
     }
     return (hash + super.hashCode()).hashCode();
   }
-  
+
   @Override
   public String getSignature(Patient patientA, Patient patientB) {
     String signature = "(";
@@ -129,6 +132,37 @@ public class AggregateMatchNode extends MatchNode {
       }
     }
     return signature + ")";
+  }
+
+  public String getSignature(Patient patientA, Patient patientB, int level) {
+    if (level == 0) {
+      return getSignature(patientA, patientB);
+    }
+    if (this.level <= level) {
+      double score = score(patientA, patientB);
+      if (score >= 0.9) {
+        return "A";
+      }
+      if (score >= 0.7) {
+        return "B";
+      }
+      if (score >= 0.5) {
+        return "C";
+      }
+      if (score >= 0.3) {
+        return "D";
+      }
+      return "E";
+    } else {
+      String signature = "";
+      for (MatchNode matcher : matchNodeList) {
+        if (matcher instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matcher;
+          signature += agg.getSignature(patientA, patientB, level);
+        }
+      }
+      return signature;
+    }
   }
 
   @Override

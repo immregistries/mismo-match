@@ -1,11 +1,12 @@
 package org.immregistries.mismo.match;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PatientMatchResult {
 
   private PatientMatchDetermination determination = null;
-  private String signatureLevel0 = "";
-  private String signatureLevel1 = "";
-  private String signatureLevel2 = "";
+  private List<MatchSignature> matchSignatureList = null;
 
   public PatientMatchDetermination getDetermination() {
     return determination;
@@ -15,28 +16,40 @@ public class PatientMatchResult {
     this.determination = determination;
   }
 
-  public String getSignatureLevel0() {
-    return signatureLevel0;
+  protected void addMatchSignature(MatchSignature matchSignature) {
+    if (matchSignatureList == null) {
+      matchSignatureList = new ArrayList<>();
+    }
+    matchSignatureList.add(matchSignature);
   }
 
-  protected void setSignatureLevel0(String signatureLevel0) {
-    this.signatureLevel0 = signatureLevel0;
+  /**
+   * @param type The signature that is wanted
+   * @return
+   */
+  public MatchSignature getMatchSignature(MatchSignatureType type) {
+    if (matchSignatureList != null) {
+      for (MatchSignature matchSignature : matchSignatureList) {
+        if (matchSignature.getType() == type) {
+          return matchSignature;
+        }
+      }
+    }
+    return null;
   }
 
-  public String getSignatureLevel1() {
-    return signatureLevel1;
+  /**
+   * Returns the list of match signatures generated as part of the match request. 
+   * 
+   * @return A list of signatures, may be empty but will not be null
+   */
+  public List<MatchSignature> getMatchSignatureList() {
+    if (matchSignatureList == null) {
+      matchSignatureList = new ArrayList<>();
+    }
+    return matchSignatureList;
   }
 
-  protected void setSignatureLevel1(String signatureLevel1) {
-    this.signatureLevel1 = signatureLevel1;
-  }
 
-  public String getSignatureLevel2() {
-    return signatureLevel2;
-  }
-
-  protected void setSignatureLevel2(String signatureLevel2) {
-    this.signatureLevel2 = signatureLevel2;
-  }
 
 }

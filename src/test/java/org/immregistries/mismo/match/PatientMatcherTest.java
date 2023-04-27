@@ -68,12 +68,12 @@ public class PatientMatcherTest {
       assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, michelle).getDetermination());
       assertEquals(PatientMatchDetermination.NO_MATCH, patientMatcher.match(daniel2, michael).getDetermination());
       
-//      System.out.println(patientMatcher.match(daniel, daniel).getSignatureLevel0());
-//      System.out.println(patientMatcher.match(daniel, michael).getSignatureLevel0());
-//      System.out.println(patientMatcher.match(daniel, daniel).getSignatureLevel1());
-//      System.out.println(patientMatcher.match(daniel, michael).getSignatureLevel1());
-//      System.out.println(patientMatcher.match(daniel, daniel).getSignatureLevel2());
-//      System.out.println(patientMatcher.match(daniel, michael).getSignatureLevel2());
+//      System.out.println(patientMatcher.match(daniel, daniel).getMatchSignature(MatchSignatureType.PRIMARY));
+//      System.out.println(patientMatcher.match(daniel, michael).getMatchSignature(MatchSignatureType.PRIMARY));
+//      System.out.println(patientMatcher.match(daniel, daniel).getMatchSignature(MatchSignatureType.SECONDARY));
+//      System.out.println(patientMatcher.match(daniel, michael).getMatchSignature(MatchSignatureType.SECONDARY));
+//      System.out.println(patientMatcher.match(daniel, daniel).getMatchSignature(MatchSignatureType.TERTIARY));
+//      System.out.println(patientMatcher.match(daniel, michael).getMatchSignature(MatchSignatureType.TERTIARY));
 
       if (i % 1000 == 0) {
         System.out.println(i);

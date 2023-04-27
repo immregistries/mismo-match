@@ -35,9 +35,12 @@ public class PatientMatcher {
     } else {
       patientMatchResult.setDetermination(PatientMatchDetermination.NO_MATCH);
     }
-    patientMatchResult.setSignatureLevel0(patientCompare.getSignature());
-    patientMatchResult.setSignatureLevel1(patientCompare.getSignature(1));
-    patientMatchResult.setSignatureLevel2(patientCompare.getSignature(2));
+    patientMatchResult.addMatchSignature(
+        new MatchSignature(patientCompare.getSignature(), MatchSignatureType.PRIMARY));
+    patientMatchResult.addMatchSignature(
+        new MatchSignature(patientCompare.getSignature(1), MatchSignatureType.SECONDARY));
+    patientMatchResult.addMatchSignature(
+        new MatchSignature(patientCompare.getSignature(2), MatchSignatureType.TERTIARY));
     return patientMatchResult;
   }
 

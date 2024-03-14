@@ -12,20 +12,33 @@ import org.immregistries.mismo.match.model.Patient;
  *
  */
 public abstract class MatchNode {
-  private String matchName = "";
 
+
+
+  private String matchName = "";
+  private String matchNameFull = "";
+  private String matchLabel = "";
   private double maxScore = 0.0;
   private double minScore = 1.0;
   private boolean enabled = true;
   protected boolean not = false;
 
+  public static String ADDRESS = "Address";
+
+  public String getMatchLabel() {
+    return matchLabel;
+  }
+  
+  public void setMatchLabel(String matchLabel) {
+    this.matchLabel = matchLabel;
+  }
+  
   /**
    * Compiles a string version of this match node that
    * can be used as part of the script defining this match node.
    * @return script for documenting and reconstructing this match node
    */
-  public abstract String makeScript();
-
+  
   /**
    * Creates basic script that all match nodes start off when making their script.
    * This method is called when makeScript() is implemented by the 
@@ -65,7 +78,7 @@ public abstract class MatchNode {
     }
     return matchName + ":" + maxScore + ":" + minScore + ":" + optionList + ":";
   }
-
+  
   /**
    * The reverse of the makeScript method, this reads the script and 
    * populates the current node tree with the weights and settings.
@@ -76,7 +89,7 @@ public abstract class MatchNode {
    * @return next pos to read within script
    */
   public abstract int readScript(String script, int pos);
-
+  
   /**
    * This method provides primary support for reading standard node. 
    * The format of this script is specified in the makeBasicScript() method.
@@ -115,7 +128,7 @@ public abstract class MatchNode {
     }
     return pos;
   }
-
+  
   /**
    * Safely finds and returns the position of the next colon. If end brace '{' or 
    * end of string is
@@ -136,12 +149,21 @@ public abstract class MatchNode {
     }
     return pos;
   }
-
+  
   @Override
   public int hashCode() {
     return ("" + maxScore + minScore + enabled).hashCode();
   }
+  
+  public String getMatchNameFull() {
+    return matchNameFull;
+  }
 
+  public void setMatchNameFull(String matchNameFull) {
+    this.matchNameFull = matchNameFull;
+  }
+
+  public abstract String makeScript();
   /**
    * @return <code>true</code> if match node and any subordinated nodes 
    * will be evaluated and included
@@ -157,6 +179,11 @@ public abstract class MatchNode {
    */
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
+    if (!enabled)
+    {
+      this.minScore = 0.0;
+      this.maxScore = 0.0;
+    }
   }
 
   /**
@@ -227,6 +254,9 @@ public abstract class MatchNode {
     }
     if (maxScore < minScore) {
       throw new IllegalArgumentException("Max score must greater than or equal to min score");
+    }
+    if (minScore == 0.0 && maxScore == 0.0) {
+      enabled = false;
     }
   }
 
@@ -704,6 +734,11 @@ public abstract class MatchNode {
 
   public String toString() {
     return "[" + minScore + "," + maxScore + "]";
+  }
+
+  public String makeSetupYml()
+  {
+    return getMatchNameFull() + ": " + isEnabled();
   }
 
 }

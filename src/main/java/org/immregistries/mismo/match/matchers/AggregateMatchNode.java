@@ -2,6 +2,8 @@ package org.immregistries.mismo.match.matchers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.immregistries.mismo.match.model.Patient;
 
 /**
@@ -86,6 +88,26 @@ public class AggregateMatchNode extends MatchNode {
 
   public AggregateMatchNode(String fieldName, double minScore, double maxScore) {
     super(fieldName, minScore, maxScore);
+    setMatchNameFull(fieldName);
+  }
+
+  public void disableMatchNodes(Map<String, Boolean> matchNodeMap) {
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode instanceof AggregateMatchNode) {
+        AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+        agg.disableMatchNodes(matchNodeMap);
+      } else {
+        matchNodeMap.get(matchNode.getMatchNameFull());
+        Boolean enabled = matchNodeMap.get(matchNode.getMatchNameFull());
+        boolean disabled = true;
+        if (enabled != null) {
+          disabled = !enabled;
+        }
+        if (disabled) {
+          matchNode.setEnabled(false);
+        } 
+      }
+    }
   }
 
   public List<MatchNode> getMatchNodeList() {
@@ -94,6 +116,7 @@ public class AggregateMatchNode extends MatchNode {
 
   public MatchNode add(MatchNode matchNode) {
     matchNodeList.add(matchNode);
+    matchNode.setMatchNameFull(this.getMatchNameFull() + "." + matchNode.getMatchName());
     return matchNode;
   }
 
@@ -102,6 +125,7 @@ public class AggregateMatchNode extends MatchNode {
       level = matchNode.getLevel() + 1;
     }
     matchNodeList.add(matchNode);
+    matchNode.setMatchNameFull(this.getMatchNameFull() + "." + matchNode.getMatchName());
     return matchNode;
 
   }
@@ -295,5 +319,38 @@ public class AggregateMatchNode extends MatchNode {
 
     return sbuf.toString();
   }
+
+  public String makeSetupYml()
+  {
+    StringBuffer sbuf = new StringBuffer();
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode instanceof AggregateMatchNode) {
+        AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+        sbuf.append(agg.makeSetupYml());
+      } else {
+        sbuf.append("  " + matchNode.makeSetupYml() + "\n");
+      }
+    }
+
+    return sbuf.toString();
+  }
+
+  public List<Double> getScoreList(Patient patientA, Patient patientB)
+  {
+    List<Double> scoreList = new ArrayList<Double>();
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode.isEnabled()) {
+        if (matchNode instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+          scoreList.addAll(agg.getScoreList(patientA, patientB));
+        } else {
+          scoreList.add(matchNode.score(patientA, patientB));
+        }
+      }
+    }
+    return scoreList;
+  }
+
+  
 
 }

@@ -13,6 +13,11 @@ import org.immregistries.mismo.match.model.Patient;
  *
  */
 public class AddressStreetNameMatchNode extends AddressStreetNumMatchNode {
+
+  public AddressStreetNameMatchNode() {
+    super();
+  }
+
   public AddressStreetNameMatchNode(String matchName, double minScore, double maxScore) {
     super(matchName, minScore, maxScore);
   }

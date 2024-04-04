@@ -17,34 +17,13 @@ import org.immregistries.mismo.match.model.Patient;
  */
 public class AddressStreetNumMatchNode extends MatchNode
 {
+
+  public AddressStreetNumMatchNode() {
+    super();
+  }
+
   public AddressStreetNumMatchNode(String matchName, double minScore, double maxScore) {
     super(matchName, minScore, maxScore);
-  }
-
-  @Override
-  public String getSignature(Patient patientA, Patient patientB) {
-    double score = score(patientA, patientB);
-    if (score >= 0.9) {
-      return "A";
-    }
-    if (score >= 0.7) {
-      return "B";
-    }
-    if (score >= 0.3) {
-      return "C";
-    }
-    return "D";
-  }
-
-  @Override
-  public String makeScript() {
-    return makeBasicScript();
-  }
-
-  @Override
-  public int readScript(String script, int pos) {
-    pos = readBasicScript(script, pos);
-    return pos;
   }
 
   @Override

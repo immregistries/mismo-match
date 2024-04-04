@@ -1,7 +1,10 @@
 package org.immregistries.mismo.match.matchers;
 
+
 import org.immregistries.mismo.match.StringUtils;
 import org.immregistries.mismo.match.model.Patient;
+
+import com.wcohen.ss.expt.ExtractAbbreviations;
 
 /**
  * This MatchNode compares two fields and indicates if they are exactly the same. It also
@@ -14,48 +17,11 @@ import org.immregistries.mismo.match.model.Patient;
  */
 public class ExactMatchNode extends MatchNode {
 
-  protected String fieldName = "";
-  protected String fieldNameOther = null;
   protected String comparisonMatch = "==";
   protected String comparisonNotMatch = "!=";  
 
-  @Override
-  public String makeScript() {
-    return makeBasicScript() + ":" + fieldName + ":" + fieldNameOther + ":" + comparisonMatch + ":" + comparisonNotMatch + ":";
-  }
-
-  @Override
-  public int readScript(String script, int pos) {
-    pos = readBasicScript(script, pos);
-    if (pos < script.length() && script.charAt(pos) != '}') {
-      int colPos = nextColon(script, pos);
-      if (colPos < script.length() && script.charAt(colPos) != '}') {
-        fieldName = script.substring(pos, colPos);
-        pos = colPos + 1;
-        if (pos < script.length()) {
-          colPos = nextColon(script, pos);
-          if (colPos < script.length() && script.charAt(colPos) != '}') {
-            fieldNameOther = script.substring(pos, colPos);
-            pos = colPos + 1;
-            if (pos < script.length()) {
-              colPos = nextColon(script, pos);
-              if (colPos < script.length() && script.charAt(colPos) != '}') {
-                comparisonMatch = script.substring(pos, colPos);
-                pos = colPos + 1;
-                if (pos < script.length()) {
-                  colPos = nextColon(script, pos);
-                  if (colPos < script.length() && script.charAt(colPos) != '}') {
-                    comparisonNotMatch = script.substring(pos, colPos);
-                    pos = colPos + 1;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return pos;
+  public ExactMatchNode() {
+    super();
   }
 
   public ExactMatchNode(String matchName, double minScore, double maxScore, String fieldName) {
@@ -92,24 +58,6 @@ public class ExactMatchNode extends MatchNode {
     return "";
   }
   
-  @Override
-  public String getSignature(Patient patientA, Patient patientB) {
-    double score = score(patientA, patientB);
-    if (score >= 0.9)
-    {
-      return "A";
-    }
-    if (score >= 0.7)
-    {
-      return "B";
-    }
-    if (score >= 0.3)
-    {
-      return "C";
-    }
-    return "D";
-  }
-
   @Override
   public double score(Patient patientA, Patient patientB) {
     String a = patientA.getValue(fieldName);

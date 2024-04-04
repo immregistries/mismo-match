@@ -12,6 +12,11 @@ import org.immregistries.mismo.match.model.Patient;
  * 
  */
 public class SameInitialMatchNode extends ExactMatchNode {
+
+  public SameInitialMatchNode() {
+    super();
+  }
+
   public SameInitialMatchNode(String matchName, double minScore, double maxScore, String fieldName) {
     super(matchName, minScore, maxScore, fieldName);
   }
@@ -48,22 +53,4 @@ public class SameInitialMatchNode extends ExactMatchNode {
     return "";
   }
   
-  @Override
-  public String getSignature(Patient patientA, Patient patientB) {
-    double score = score(patientA, patientB);
-    if (score >= 0.9)
-    {
-      return "A";
-    }
-    if (score >= 0.7)
-    {
-      return "B";
-    }
-    if (score >= 0.3)
-    {
-      return "C";
-    }
-    return "D";
-  }
-
 }

@@ -10,22 +10,14 @@ import org.immregistries.mismo.match.model.Patient;
  *
  */
 public class BirthMayBeTwinMatchNode extends MatchNode {
+
+  public BirthMayBeTwinMatchNode() {
+    super();
+  }
+
   public BirthMayBeTwinMatchNode(String matchName, double minScore, double maxScore) {
     super(matchName, minScore, maxScore);
   }
-
-  
-  @Override
-  public String makeScript() {
-    return makeBasicScript();
-  }
-  
-  @Override
-  public int readScript(String script, int pos) {
-    pos = readBasicScript(script, pos);
-    return pos;
-  }
-  
 
   @Override
   public double score(Patient patientA, Patient patientB) {
@@ -42,21 +34,4 @@ public class BirthMayBeTwinMatchNode extends MatchNode {
     return "'" + patientA.getValueDescription(Patient.BIRTH_STATUS) + "' or '" + patientB.getValueDescription(Patient.BIRTH_STATUS) + "' == 'M'";
   }
   
-  @Override
-  public String getSignature(Patient patientA, Patient patientB) {
-    double score = score(patientA, patientB);
-    if (score >= 0.9)
-    {
-      return "A";
-    }
-    if (score >= 0.7)
-    {
-      return "B";
-    }
-    if (score >= 0.3)
-    {
-      return "C";
-    }
-    return "D";
-  }
 }

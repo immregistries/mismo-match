@@ -1,16 +1,14 @@
 package org.immregistries.mismo.match;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
-import org.immregistries.mismo.match.matchers.MatchNode;
+import org.immregistries.mismo.match.model.Configuration;
 import org.immregistries.mismo.match.model.MatchItem;
 import org.immregistries.mismo.match.model.Patient;
 
@@ -28,51 +26,31 @@ public class PatientCompare {
   private AggregateMatchNode notMatch;
   private AggregateMatchNode twin;
   private AggregateMatchNode missing;
+  private String version = "";
+  private String lastModifiedBy = "";
+  private Date lastModifiedDate = new Date();
+  private List<String> changeLogList = new ArrayList<>();
+  Configuration configuration = new Configuration();
 
-  /**
-   * Creates script that can be used to recreate this object later. 
-   * @return
-   */
-  public String makeScript() {
-    StringBuilder sb = new StringBuilder();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
-    sb.append("Born:" + sdf.format(born) + ";");
-    sb.append(match.makeScript());
-    sb.append(";");
-    sb.append(notMatch.makeScript());
-    sb.append(";");
-    sb.append(twin.makeScript());
-    sb.append(";");
-    sb.append(missing.makeScript());
-    sb.append(";");
-    return sb.toString();
-  }
-
-  public String makeSetupYml()
+  public Configuration getConfiguration()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("nodesEnabled:\n");
-    sb.append(match.makeSetupYml());
-    sb.append(notMatch.makeSetupYml());
-    sb.append(twin.makeSetupYml());
-    sb.append(missing.makeSetupYml());
-    return sb.toString();
+    return configuration;
   }
 
-  public List<Double> getScoreList()
+  private List<Double> getScoreList()
   {
     List<Double> scoreList = new ArrayList<Double>();
-    scoreList.addAll(match.getScoreList(patientA, patientB));
-    scoreList.addAll(notMatch.getScoreList(patientA, patientB));
-    scoreList.addAll(twin.getScoreList(patientA, patientB));
-    scoreList.addAll(missing.getScoreList(patientA, patientB));
+    match.populateScoreList(patientA, patientB, scoreList);
+    notMatch.populateScoreList(patientA, patientB, scoreList);
+    twin.populateScoreList(patientA, patientB, scoreList);
+    missing.populateScoreList(patientA, patientB, scoreList);
     return scoreList;
   }
 
-  public String getScoreListSignature()
+  public String getSignature()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append(makeSetupYmlHash());
+    sb.append(configuration.getHashForSignature());
     List<Double> scoreList = getScoreList();
     String signature1 = "";
     String signature2 = "";
@@ -92,108 +70,69 @@ public class PatientCompare {
       scoreInt = scoreInt >> 1;
       signature4 += (scoreInt % 2 == 0) ? "0" : "1";
     }
-    sb.append(":" + convertToHex(signature1));
-    sb.append(":" + convertToHex(signature2));
-    sb.append(":" + convertToHex(signature3));
-    sb.append(":" + convertToHex(signature4));
+    sb.append(":" + collapse(signature1));
+    sb.append(":" + collapse(signature2));
+    sb.append(":" + collapse(signature3));
+    sb.append(":" + collapse(signature4));
     return sb.toString();
   }
 
-  private String convertToHex(String s)
+  private static Map<String, String> collapseCharacterMap = new HashMap<>();
+  static {
+    collapseCharacterMap.put("00000", "0");
+    collapseCharacterMap.put("00001", "1");
+    collapseCharacterMap.put("00010", "2");
+    collapseCharacterMap.put("00011", "3");
+    collapseCharacterMap.put("00100", "4");
+    collapseCharacterMap.put("00101", "5");
+    collapseCharacterMap.put("00110", "6");
+    collapseCharacterMap.put("00111", "7");
+    collapseCharacterMap.put("01000", "8");
+    collapseCharacterMap.put("01001", "9");
+    collapseCharacterMap.put("01010", "A");
+    collapseCharacterMap.put("01011", "B");
+    collapseCharacterMap.put("01100", "C");
+    collapseCharacterMap.put("01101", "D");
+    collapseCharacterMap.put("01110", "E");
+    collapseCharacterMap.put("01111", "F");
+    collapseCharacterMap.put("10000", "G");
+    collapseCharacterMap.put("10001", "H");
+    collapseCharacterMap.put("10010", "J");
+    collapseCharacterMap.put("10011", "K");
+    collapseCharacterMap.put("10100", "M");
+    collapseCharacterMap.put("10101", "N");
+    collapseCharacterMap.put("10110", "P");
+    collapseCharacterMap.put("10111", "Q");
+    collapseCharacterMap.put("11000", "R");
+    collapseCharacterMap.put("11001", "S");
+    collapseCharacterMap.put("11010", "T");
+    collapseCharacterMap.put("11011", "U");
+    collapseCharacterMap.put("11100", "V");
+    collapseCharacterMap.put("11101", "X");
+    collapseCharacterMap.put("11110", "Y");
+    collapseCharacterMap.put("11111", "Z");
+  
+  }
+
+  protected static String collapse(String s)
   {
-    String hexString = "";
+    String collapse = "";
      while (s.length() > 0)
      {
-        int endPos = s.length();
-        if (endPos > 4)
-        {
-           endPos = 4;
-        }
-        int decimalValue = Integer.parseInt(s.substring(0, endPos));
-        hexString += Integer.toHexString(decimalValue);
-        if (endPos > 4) {
-          s = s.substring(4);
-        }
-        else {
-          s = "";
-        }        
+      if (s.length() < 5)
+      {
+        s = s + "00000";
+        s = s.substring(0, 5);
+      }
+      String replace = collapseCharacterMap.get(s.substring(0, 5));
+      if (replace != null) {
+        collapse += replace;
+      } else {
+        collapse += "!" + s.substring(0, 5) + "!";
+      }
+      s = s.substring(5);
      } 
-     return hexString;
-  }
-
-  public String makeSetupYmlHash()
-  {
-    String setupYml = makeSetupYml();
-    try {
-      String setupYmlHash = generateShortHash(setupYml, 15);
-      return setupYmlHash;
-    }
-    catch (NoSuchAlgorithmException e) {
-      if (setupYml.length() > 15) {
-        return setupYml.substring(0, 15);
-      }
-      return setupYml;
-    }
-
-  }
-
-      public static String generateShortHash(String input, int length) throws NoSuchAlgorithmException {
-        if (length > 44) { // Base64-encoded SHA-256 strings are 44 characters long, so we limit the length.
-            throw new IllegalArgumentException("Maximum length should be 44 or less.");
-        }
-
-        // Create a SHA-256 digest
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashBytes = digest.digest(input.getBytes());
-
-        // Encode the bytes to Base64
-        String base64Encoded = Base64.getEncoder().encodeToString(hashBytes);
-
-        // Truncate or pad the string to the specified length
-        return base64Encoded.length() > length ? base64Encoded.substring(0, length) : base64Encoded;
-    }
-
-  /**
-   * Instantiates object based on script generated by previous makeScript method.
-   * This is used to re-initalize this comparison object.
-   * @param script generated by makeScript()
-   * @return
-   */
-  public int readScript(String script) {
-    int generation = 0;
-    try {
-      String[] parts = script.split("\\;");
-      for (String part : parts) {
-        if (part.startsWith("Born:")) {
-          SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
-          born = sdf.parse(readValue(part));
-        } else if (part.startsWith("Match:")) {
-          match.readScript(part);
-        } else if (part.startsWith("Not Match:")) {
-          notMatch.readScript(part);
-        } else if (part.startsWith("Twin:")) {
-          twin.readScript(part);
-        } else if (part.startsWith("Suspect Twin:")) {
-          twin.readScript(part);
-        } else if (part.startsWith("Missing:")) {
-          missing.readScript(part);
-        } else if (part.startsWith("Generation:")) {
-          generation = Integer.parseInt(readValue(part));
-        }
-      }
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Unable to read script", e);
-    }
-    return generation;
-  }
-
-  private String readValue(String line) {
-    int posColon = line.indexOf(":");
-    if (posColon != -1) {
-      String value = line.substring(posColon + 1).trim();
-      return value;
-    }
-    return "";
+     return collapse;
   }
 
   /**
@@ -212,18 +151,31 @@ public class PatientCompare {
     this.ancestry = ancestry;
   }
 
-  private static final String defaultScript =
-      "Generation:0;World Name:MIIS-C;Island Name:Boston19;Score:0.8768426058012363;Born:2012.01.12 07:39:31 MST;Match:0.5976539440304252:0.0::{Household:0.5340047021220341:0.0::{Last Name:0.7394477915760619:0.16083169281725096::{L-match:0.8975774524536817:0.0::}{L-similar:0.5769135677880574:0.0::}{L-hyphenated:0.6:0.0::}}{Guardian:0.3:0.0::{GF-match:0.5:0.0::}{GL-match:0.46027300915789704:0.0::}{MM-match:0.17714551350571317:0.0::}}{Location:0.3:0.0::{PN-match:0.5:0.08589466214027962::}{SA-match:0.9673598834793466:0.4559152605261425::}{S-match:0.19119768322727826:0.0::}}}{Person:0.6:0.0::{Patient Id:0.0:0.0::{MRN-match:0.9:0.008616028169453616::}{SSN-match:0.7:0.4762401412904794:disabled:}{MA-match:0.3854594836970239:0.2912968817242621:disabled:}}{First Name:0.6539430754899886:0.022285108492698935::{F-match:0.9337334077507853:0.11714645904840293::}{F-similar:0.12639866792151896:0.0::}{F-middle:0.3461773101772462:0.007532771294044394::}{A-match:0.4:0.16664034418411822::}{G-match:0.1:0.0::}}{Birth Order:0.5488399547889631:0.0::{BO-matches:0.17056518914444302:0.012133046081512939::}{MBS-no:0.5:0.0::}}{DOB:0.4:0.16099709260030182::{DOB-match:1.0:0.36096395805526216::}{DOB-similar:0.1428016622436511:0.12050050021621805::}}{Middle Name:0.1097499668277081:0.0::{M-match:1.0:0.0::}{M-initial:0.11158025059378063:0.0::}{M-similar:0.05221669388457371:0.0::}{S-match:0.17339445105215423:0.0::}}{Shot History:0.2:0.0::{SH-match:0.8434711196989159:0.0::}}};Not Match:0.44421419906866344:0.12240703311770455::{Household:0.49680346080176185:0.20163533642328246::{Last Name:0.4:0.0::{L-not-match:1.0:0.0:not:}{L-not-similar:0.607962842245958:0.43248744317423493:not:}{L-not-hyphenated:0.6:0.0:not:}}{Guardian:0.3:0.12543614754336277::{GF-not-match:0.8772890703808285:0.0038207325234260736:not:}{GL-not-match:0.5:0.0:not:}{MM-not-match:0.6156030399580353:0.038992047203868174:not:}{MM-not-similar:0.530906191802011:0.2699050811578392:not:}}{Location:0.44207784318945:0.0::{PN-not-match:0.4:0.0:not:}{SA-not-match:0.6625441818813038:0.0920940731120864:not:}{S-not-match:0.3:0.2619251366713534:not:}}}{Person:0.1761757252522036:0.0::{Patient Id:0.4864546336460728:0.0::{MRN-not-match:0.05:0.0:not:}{SSN-not-match:0.9448590837670895:0.24338815020508475:not,disabled:}{MA-not-match:0.8879184240368448:0.0:not,disabled:}}{First Name:0.5803199159650172:0.010349465858667473::{F-not-match:0.3:0.2159008837549209:not:}{F-not-similar:0.3:0.05010846114037204:not:}{F-not-middle:0.2841023560998641:0.028499922506510345:not:}{A-not-match:0.0:0.0:not:}{G-not-match:0.9851122869818935:0.0:not:}}{Birth Order:0.01572755336230108:0.0::}{DOB:0.12408413338661316:0.008017702745740651::{DOB-not-match:0.7785390891446896:0.2683494770446756:not:}{DOB-not-similar:0.8043120733536863:0.035384086215674015:not:}}{Middle Name:0.9194439329366614:0.7527277958973195::{M-not-match:1.0:0.4750592342546145:not:}{M-not-initial:0.9979020506695768:0.0631956946954324:not:}{M-not-similar:0.6:0.04038705921822772:not:}{S-not-match:0.1:0.0:not:}}{Shot History:0.2:0.0::{SH-not-match:0.31664212470651:0.0:not:}}};Suspect Twin:1.0:0.0::{Name Different:0.2:0.0::{F-not-match:0.5:0.0:not:}{F-not-similar:0.6:0.0:not:}{M-not-match:0.5:0.0:not:}{G-not-match:0.5:0.0:not:}}{Birth Date:0.2:0.0::{DOB-match:1.0:0.0::}}{Birth Status:0.6:0.0::{MBS-maybe:0.5:0.0::}{MBS-yes:0.1:0.0::}};Missing:1.0:0.0::{Household:0.87705735766419:0.0::{L-missing:0.7064672667764026:0.0::}{Household:0.4:0.0::{GFN-missing:0.3:0.0::}{GLN-missing:0.19190311458033785:0.014397094425822488::}{MMN-missing:0.3:0.0::}}{Location:0.7208979096176452:0.0::{PN-missing:0.2:0.0::}{AS1-missing:0.4:0.0::}{AS2-missing:0.0:0.0::}{AC-missing:0.0:0.0::}{AS-missing:0.05:0.0::}{AZ-missing:0.0:0.0::}}}{Person:0.6:0.026859283296303826::{Patient Id:0.3:0.28262972979105583::{MRN-missing:0.9103716296607758:0.007178047110102764::}{SSN-missing:0.4:0.0:disabled:}{MA-missing:0.4:0.0:disabled:}}{First Name:0.3:0.0::{F-missing:1.0:0.0::}{A-missing:0.0543372636540701:0.0::}{S-missing:0.0:0.0::}{G-missing:0.4464521217969287:0.0::}}{Birth Order:0.1:0.0::{MBS-missing:1.0:0.0::}{BM-missing:0.5:0.0::}{BO-missing:0.6017422488947954:0.0::}}{DOB-missing:0.4:0.0::}{M-missing:0.2:0.0::}{SH-missing:0.2:0.0::}};";
-
   /**
    * Creates default patient compare based off of the default script.    
    */
   public PatientCompare() {
-    match = MatchNode.createPatientMatchNode();
-    notMatch = MatchNode.createPatientNotMatchNode();
-    twin = MatchNode.createTwinMatchNode();
-    missing = MatchNode.createMissingMatchNode();
-    readScript(defaultScript);
+    match = configuration.getMatch();
+    notMatch = configuration.getNotMatch();
+    twin = configuration.getTwin();
+    missing = configuration.getTwin();
+  }
+
+  public PatientCompare(InputStream in)
+  {
+    configuration = new Configuration(in);
+    match = configuration.getMatch();
+    notMatch = configuration.getNotMatch();
+    twin = configuration.getTwin();
+    missing = configuration.getTwin();
+  }
+
+  public PatientCompare(String configurationText) {
+    configuration = new Configuration(configurationText);
+    match = configuration.getMatch();
+    notMatch = configuration.getNotMatch();
+    twin = configuration.getTwin();
+    missing = configuration.getTwin();
   }
 
   public void disableMatchNodes(Map<String, Boolean> matchNodeMap) {
@@ -298,24 +250,6 @@ public class PatientCompare {
   }
 
   /**
-   * Returns a signature or summary of how his comparison looks. The signature simplifies the match
-   * characteristics between two patients being matched. This allows for lumping similar matches
-   * together for comparison. 
-   * @return string representing signature of how the patient objects compare
-   */
-  public String getSignature() {
-    return match.getSignature(patientA, patientB) + notMatch.getSignature(patientA, patientB)
-        + missing.getSignature(patientA, patientB) + twin.getSignature(patientA, patientB);
-  }
-
-  public String getSignature(int level) {
-    return match.getSignature(patientA, patientB, level)
-        + notMatch.getSignature(patientA, patientB, level)
-        + missing.getSignature(patientA, patientB, level)
-        + twin.getSignature(patientA, patientB, level);
-  }
-
-  /**
    * Evaluates the match set and returns verdict. 
    * @return "Match", "Possible Match" or "Not a Match"
    */
@@ -383,4 +317,45 @@ public class PatientCompare {
   }
 
   private Patient patientB = null;
+
+  public Date getBorn() {
+    return born;
+  }
+
+  public void setBorn(Date born) {
+    this.born = born;
+  }
+
+  public String getVersion() {
+    return version;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public Date getLastModifiedDate() {
+    return lastModifiedDate;
+  }
+
+  public void setLastModifiedDate(Date lastModifiedDate) {
+    this.lastModifiedDate = lastModifiedDate;
+  }
+
+  public List<String> getChangeLogList() {
+    return changeLogList;
+  }
+
+  public void setChangeLogList(List<String> changeLogList) {
+    this.changeLogList = changeLogList;
+  }
+  public String getLastModifiedBy() {
+    return lastModifiedBy;
+  }
+
+  public void setLastModifiedBy(String lastModifiedBy) {
+    this.lastModifiedBy = lastModifiedBy;
+  }
+
+
 }

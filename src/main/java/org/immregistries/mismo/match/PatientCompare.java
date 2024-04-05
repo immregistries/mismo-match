@@ -57,18 +57,15 @@ public class PatientCompare {
     String signature3 = "";
     String signature4 = "";
     
-    for (Double score : scoreList)
-    {
+    for (Double score : scoreList) {
       int scoreInt = (int) (score * 15);
-      // if scoreInt is even, then add 0 to signature1, else add 1
-      signature1 += (scoreInt % 2 == 0) ? "0" : "1";
-      // shift scoreInt by one bit to the right
+      signature4 += scoreInt % 2;
       scoreInt = scoreInt >> 1;
-      signature2 += (scoreInt % 2 == 0) ? "0" : "1";
+      signature3 += scoreInt % 2;
       scoreInt = scoreInt >> 1;
-      signature3 += (scoreInt % 2 == 0) ? "0" : "1";
+      signature2 += scoreInt % 2;
       scoreInt = scoreInt >> 1;
-      signature4 += (scoreInt % 2 == 0) ? "0" : "1";
+      signature1 += scoreInt % 2;
     }
     sb.append(":" + collapse(signature1));
     sb.append(":" + collapse(signature2));
@@ -79,39 +76,70 @@ public class PatientCompare {
 
   private static Map<String, String> collapseCharacterMap = new HashMap<>();
   static {
-    collapseCharacterMap.put("00000", "0");
-    collapseCharacterMap.put("00001", "1");
-    collapseCharacterMap.put("00010", "2");
-    collapseCharacterMap.put("00011", "3");
-    collapseCharacterMap.put("00100", "4");
-    collapseCharacterMap.put("00101", "5");
-    collapseCharacterMap.put("00110", "6");
-    collapseCharacterMap.put("00111", "7");
-    collapseCharacterMap.put("01000", "8");
-    collapseCharacterMap.put("01001", "9");
-    collapseCharacterMap.put("01010", "A");
-    collapseCharacterMap.put("01011", "B");
-    collapseCharacterMap.put("01100", "C");
-    collapseCharacterMap.put("01101", "D");
-    collapseCharacterMap.put("01110", "E");
-    collapseCharacterMap.put("01111", "F");
-    collapseCharacterMap.put("10000", "G");
-    collapseCharacterMap.put("10001", "H");
-    collapseCharacterMap.put("10010", "J");
-    collapseCharacterMap.put("10011", "K");
-    collapseCharacterMap.put("10100", "M");
-    collapseCharacterMap.put("10101", "N");
-    collapseCharacterMap.put("10110", "P");
-    collapseCharacterMap.put("10111", "Q");
-    collapseCharacterMap.put("11000", "R");
-    collapseCharacterMap.put("11001", "S");
-    collapseCharacterMap.put("11010", "T");
-    collapseCharacterMap.put("11011", "U");
-    collapseCharacterMap.put("11100", "V");
-    collapseCharacterMap.put("11101", "X");
-    collapseCharacterMap.put("11110", "Y");
-    collapseCharacterMap.put("11111", "Z");
-  
+    collapseCharacterMap.put("000000", "A");
+    collapseCharacterMap.put("000001", "B");
+    collapseCharacterMap.put("000010", "C");
+    collapseCharacterMap.put("000011", "D");
+    collapseCharacterMap.put("000100", "E");
+    collapseCharacterMap.put("000101", "F");
+    collapseCharacterMap.put("000110", "G");
+    collapseCharacterMap.put("000111", "H");
+    collapseCharacterMap.put("001000", "I");
+    collapseCharacterMap.put("001001", "J");
+    collapseCharacterMap.put("001010", "K");
+    collapseCharacterMap.put("001011", "L");
+    collapseCharacterMap.put("001100", "M");
+    collapseCharacterMap.put("001101", "N");
+    collapseCharacterMap.put("001110", "O");
+    collapseCharacterMap.put("001111", "P");
+    collapseCharacterMap.put("010000", "Q");
+    collapseCharacterMap.put("010001", "R");
+    collapseCharacterMap.put("010010", "S");
+    collapseCharacterMap.put("010011", "T");
+    collapseCharacterMap.put("010100", "U");
+    collapseCharacterMap.put("010101", "V");
+    collapseCharacterMap.put("010110", "W");
+    collapseCharacterMap.put("010111", "X");
+    collapseCharacterMap.put("011000", "Y");
+    collapseCharacterMap.put("011001", "Z");
+    collapseCharacterMap.put("011010", "a");
+    collapseCharacterMap.put("011011", "b");
+    collapseCharacterMap.put("011100", "c");
+    collapseCharacterMap.put("011101", "d");
+    collapseCharacterMap.put("011110", "e");
+    collapseCharacterMap.put("011111", "f");
+    collapseCharacterMap.put("100000", "g");
+    collapseCharacterMap.put("100001", "h");
+    collapseCharacterMap.put("100010", "i");
+    collapseCharacterMap.put("100011", "j");
+    collapseCharacterMap.put("100100", "k");
+    collapseCharacterMap.put("100101", "l");
+    collapseCharacterMap.put("100110", "m");
+    collapseCharacterMap.put("100111", "n");
+    collapseCharacterMap.put("101000", "o");
+    collapseCharacterMap.put("101001", "p");
+    collapseCharacterMap.put("101010", "q");
+    collapseCharacterMap.put("101011", "r");
+    collapseCharacterMap.put("101100", "s");
+    collapseCharacterMap.put("101101", "t");
+    collapseCharacterMap.put("101110", "u");
+    collapseCharacterMap.put("101111", "v");
+    collapseCharacterMap.put("110000", "w");
+    collapseCharacterMap.put("110001", "x");
+    collapseCharacterMap.put("110010", "y");
+    collapseCharacterMap.put("110011", "z");
+    collapseCharacterMap.put("110100", "0");
+    collapseCharacterMap.put("110101", "1");
+    collapseCharacterMap.put("110110", "2");
+    collapseCharacterMap.put("110111", "3");
+    collapseCharacterMap.put("111000", "4");
+    collapseCharacterMap.put("111001", "5");
+    collapseCharacterMap.put("111010", "6");
+    collapseCharacterMap.put("111011", "7");
+    collapseCharacterMap.put("111100", "8");
+    collapseCharacterMap.put("111101", "9");
+    collapseCharacterMap.put("111110", "+");
+    collapseCharacterMap.put("111111", "/");
   }
 
   protected static String collapse(String s)
@@ -119,18 +147,18 @@ public class PatientCompare {
     String collapse = "";
      while (s.length() > 0)
      {
-      if (s.length() < 5)
+      if (s.length() < 6)
       {
-        s = s + "00000";
-        s = s.substring(0, 5);
+        s = s + "000000";
+        s = s.substring(0, 6);
       }
-      String replace = collapseCharacterMap.get(s.substring(0, 5));
+      String replace = collapseCharacterMap.get(s.substring(0, 6));
       if (replace != null) {
         collapse += replace;
       } else {
-        collapse += "!" + s.substring(0, 5) + "!";
+        collapse += "!" + s.substring(0, 6) + "!";
       }
-      s = s.substring(5);
+      s = s.substring(6);
      } 
      return collapse;
   }

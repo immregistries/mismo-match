@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
+import org.immregistries.mismo.match.matchers.MatchNode;
 import org.immregistries.mismo.match.model.Configuration;
 import org.immregistries.mismo.match.model.MatchItem;
 import org.immregistries.mismo.match.model.Patient;
@@ -37,8 +38,11 @@ public class PatientCompare {
     return configuration;
   }
 
-  private List<Double> getScoreList()
+  public List<Double> getScoreList()
   {
+    if (patientA == null || patientB == null) {
+      throw new IllegalArgumentException("Unable to get list of match notes and score map because patient A and patient B were not set");
+    }
     List<Double> scoreList = new ArrayList<Double>();
     match.populateScoreList(patientA, patientB, scoreList);
     notMatch.populateScoreList(patientA, patientB, scoreList);
@@ -46,6 +50,18 @@ public class PatientCompare {
     missing.populateScoreList(patientA, patientB, scoreList);
     return scoreList;
   }
+
+  public void populateMatchNodeListAndScoreMap(List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
+    if (patientA == null || patientB == null) {
+      throw new IllegalArgumentException("Unable to get list of match notes and score map because patient A and patient B were not set");
+    }
+    match.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+    notMatch.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+    twin.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+    missing.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+  }
+
+
 
   public String getSignature()
   {

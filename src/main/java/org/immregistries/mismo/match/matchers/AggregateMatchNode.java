@@ -253,6 +253,20 @@ public class AggregateMatchNode extends MatchNode {
     return sbuf.toString();
   }
 
+  public void populateMatchNodeListAndScoreMap(Patient patientA, Patient patientB, List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode.isEnabled()) {
+        if (matchNode instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+          agg.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+        } else {
+          matchNodeList.add(matchNode);
+          scoreMap.put(matchNode, matchNode.score(patientA, patientB));
+        }
+      }
+    }
+  }
+
   public void populateScoreList(Patient patientA, Patient patientB, List<Double> scoreList)
   {
     for (MatchNode matchNode : matchNodeList) {

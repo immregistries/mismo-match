@@ -254,7 +254,7 @@ public class AggregateMatchNode extends MatchNode {
   }
 
   public void populateMatchNodeListAndScoreMap(Patient patientA, Patient patientB, List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
-    for (MatchNode matchNode : matchNodeList) {
+    for (MatchNode matchNode : this.matchNodeList) {
       if (matchNode.isEnabled()) {
         if (matchNode instanceof AggregateMatchNode) {
           AggregateMatchNode agg = (AggregateMatchNode) matchNode;

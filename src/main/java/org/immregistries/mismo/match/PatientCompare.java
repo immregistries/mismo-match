@@ -2,11 +2,11 @@ package org.immregistries.mismo.match;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
 import org.immregistries.mismo.match.model.Configuration;
 import org.immregistries.mismo.match.model.MatchItem;
@@ -37,7 +37,7 @@ public class PatientCompare {
     return configuration;
   }
 
-  private List<Double> getScoreList()
+  protected List<Double> getScoreList()
   {
     List<Double> scoreList = new ArrayList<Double>();
     match.populateScoreList(patientA, patientB, scoreList);
@@ -385,5 +385,7 @@ public class PatientCompare {
     this.lastModifiedBy = lastModifiedBy;
   }
 
-
+  public static Map<String, String> getCollapseCharacterMap() {
+    return Collections.unmodifiableMap(collapseCharacterMap);
+  }
 }

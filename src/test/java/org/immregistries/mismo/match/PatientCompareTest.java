@@ -114,5 +114,15 @@ public class PatientCompareTest {
         }
       };
       assertEquals("FgDgzTConRk3azU:/3sNBE:vXEdlU:vXEdlU:v3kdlU", compare.getSignature());
+
+      compare = new PatientCompare() {
+        @Override
+        protected List<Double> getScoreList() {
+          return Arrays.asList(1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.55, 0.00, 1.00, 0.00, 0.00,
+              1.00, 0.75, 0.00, 0.00, 0.00, 0.00, 1.00, 1.00, 0.45, 0.00, 0.00, 1.00, 0.00, 0.20,
+              1.00, 1.00, 0.45, 1.00, 0.00, 1.00, 0.45, 1.00, 0.00);
+        }
+      };
+      assertEquals("FgDgzTConRk3azU:gphiao:gJBye4:gJhy+4:gJhi6o", compare.getSignature());
     }
 }

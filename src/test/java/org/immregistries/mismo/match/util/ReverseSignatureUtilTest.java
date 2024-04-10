@@ -11,6 +11,8 @@ public class ReverseSignatureUtilTest {
     assertHex("07000060f0006f70fff800f08ff8f0f8f000", "hash:AITy+4:Qo7iao:Qo7iao:QIbiao");
 
     assertHex("f8ffff9f0fff908f0007ff0f70070f070f00", "hash:/3sNBE:vXEdlU:vXEdlU:v3kdlU");
+
+    assertHex("f0000080f00fb0000ff600f03ff6f0f6f000", "hash:gphiao:gJBye4:gJhy+4:gJhi6o");
   }
 
   private void assertHex(String expected, String input) {

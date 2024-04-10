@@ -1,7 +1,9 @@
 package org.immregistries.mismo.match;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
 
 public class PatientCompareTest {
     @Test
@@ -89,5 +91,28 @@ public class PatientCompareTest {
       assertEquals("/I", PatientCompare.collapse("111111001"));
       assertEquals("/A", PatientCompare.collapse("11111100000"));
       assertEquals("/AA", PatientCompare.collapse("1111110000000"));
+    }
+
+    @Test
+    public void signature() {
+      PatientCompare compare = new PatientCompare() {
+        @Override
+        protected List<Double> getScoreList() {
+          return Arrays.asList(0.00, 0.47, 0.00, 0.00, 0.00, 0.00, 0.44, 0.00, 1.00, 0.00, 0.00,
+              0.00, 0.46, 1.00, 0.48, 0.00, 1.00, 1.00, 1.00, 0.56, 0.00, 0.00, 1.00, 0.00, 0.54,
+              1.00, 1.00, 0.56, 1.00, 0.00, 1.00, 0.56, 1.00, 0.00);
+        }
+      };
+      assertEquals("FgDgzTConRk3azU:AITy+4:Qo7iao:Qo7iao:QIbiao", compare.getSignature());
+
+      compare = new PatientCompare() {
+        @Override
+        protected List<Double> getScoreList() {
+          return Arrays.asList(1.00, 0.55, 1.00, 1.00, 1.00, 1.00, 0.60, 1.00, 0.00, 1.00, 1.00,
+              1.00, 0.60, 0.00, 0.55, 1.00, 0.00, 0.00, 0.00, 0.50, 1.00, 1.00, 0.00, 1.00, 0.50,
+              0.00, 0.00, 0.50, 0.00, 1.00, 0.00, 0.50, 0.00, 1.00);
+        }
+      };
+      assertEquals("FgDgzTConRk3azU:/3sNBE:vXEdlU:vXEdlU:v3kdlU", compare.getSignature());
     }
 }

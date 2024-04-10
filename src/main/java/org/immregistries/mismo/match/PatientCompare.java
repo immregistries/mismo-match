@@ -2,11 +2,11 @@ package org.immregistries.mismo.match;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
 import org.immregistries.mismo.match.matchers.MatchNode;
 import org.immregistries.mismo.match.model.Configuration;
@@ -38,7 +38,7 @@ public class PatientCompare {
     return configuration;
   }
 
-  public List<Double> getScoreList()
+  protected List<Double> getScoreList()
   {
     if (patientA == null || patientB == null) {
       throw new IllegalArgumentException("Unable to get list of match notes and score map because patient A and patient B were not set");
@@ -401,5 +401,7 @@ public class PatientCompare {
     this.lastModifiedBy = lastModifiedBy;
   }
 
-
+  public static Map<String, String> getCollapseCharacterMap() {
+    return Collections.unmodifiableMap(collapseCharacterMap);
+  }
 }

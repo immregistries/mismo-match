@@ -2,9 +2,8 @@ package org.immregistries.mismo.match;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
@@ -43,7 +42,7 @@ public class PatientCompare {
     if (patientA == null || patientB == null) {
       throw new IllegalArgumentException("Unable to get list of match notes and score map because patient A and patient B were not set");
     }
-    List<Double> scoreList = new ArrayList<Double>();
+    List<Double> scoreList = new ArrayList<>();
     match.populateScoreList(patientA, patientB, scoreList);
     notMatch.populateScoreList(patientA, patientB, scoreList);
     twin.populateScoreList(patientA, patientB, scoreList);
@@ -90,74 +89,6 @@ public class PatientCompare {
     return sb.toString();
   }
 
-  private static Map<String, String> collapseCharacterMap = new HashMap<>();
-  static {
-    collapseCharacterMap.put("000000", "A");
-    collapseCharacterMap.put("000001", "B");
-    collapseCharacterMap.put("000010", "C");
-    collapseCharacterMap.put("000011", "D");
-    collapseCharacterMap.put("000100", "E");
-    collapseCharacterMap.put("000101", "F");
-    collapseCharacterMap.put("000110", "G");
-    collapseCharacterMap.put("000111", "H");
-    collapseCharacterMap.put("001000", "I");
-    collapseCharacterMap.put("001001", "J");
-    collapseCharacterMap.put("001010", "K");
-    collapseCharacterMap.put("001011", "L");
-    collapseCharacterMap.put("001100", "M");
-    collapseCharacterMap.put("001101", "N");
-    collapseCharacterMap.put("001110", "O");
-    collapseCharacterMap.put("001111", "P");
-    collapseCharacterMap.put("010000", "Q");
-    collapseCharacterMap.put("010001", "R");
-    collapseCharacterMap.put("010010", "S");
-    collapseCharacterMap.put("010011", "T");
-    collapseCharacterMap.put("010100", "U");
-    collapseCharacterMap.put("010101", "V");
-    collapseCharacterMap.put("010110", "W");
-    collapseCharacterMap.put("010111", "X");
-    collapseCharacterMap.put("011000", "Y");
-    collapseCharacterMap.put("011001", "Z");
-    collapseCharacterMap.put("011010", "a");
-    collapseCharacterMap.put("011011", "b");
-    collapseCharacterMap.put("011100", "c");
-    collapseCharacterMap.put("011101", "d");
-    collapseCharacterMap.put("011110", "e");
-    collapseCharacterMap.put("011111", "f");
-    collapseCharacterMap.put("100000", "g");
-    collapseCharacterMap.put("100001", "h");
-    collapseCharacterMap.put("100010", "i");
-    collapseCharacterMap.put("100011", "j");
-    collapseCharacterMap.put("100100", "k");
-    collapseCharacterMap.put("100101", "l");
-    collapseCharacterMap.put("100110", "m");
-    collapseCharacterMap.put("100111", "n");
-    collapseCharacterMap.put("101000", "o");
-    collapseCharacterMap.put("101001", "p");
-    collapseCharacterMap.put("101010", "q");
-    collapseCharacterMap.put("101011", "r");
-    collapseCharacterMap.put("101100", "s");
-    collapseCharacterMap.put("101101", "t");
-    collapseCharacterMap.put("101110", "u");
-    collapseCharacterMap.put("101111", "v");
-    collapseCharacterMap.put("110000", "w");
-    collapseCharacterMap.put("110001", "x");
-    collapseCharacterMap.put("110010", "y");
-    collapseCharacterMap.put("110011", "z");
-    collapseCharacterMap.put("110100", "0");
-    collapseCharacterMap.put("110101", "1");
-    collapseCharacterMap.put("110110", "2");
-    collapseCharacterMap.put("110111", "3");
-    collapseCharacterMap.put("111000", "4");
-    collapseCharacterMap.put("111001", "5");
-    collapseCharacterMap.put("111010", "6");
-    collapseCharacterMap.put("111011", "7");
-    collapseCharacterMap.put("111100", "8");
-    collapseCharacterMap.put("111101", "9");
-    collapseCharacterMap.put("111110", "+");
-    collapseCharacterMap.put("111111", "/");
-  }
-
   protected static String collapse(String s)
   {
     String collapse = "";
@@ -168,12 +99,16 @@ public class PatientCompare {
         s = s + "000000";
         s = s.substring(0, 6);
       }
-      String replace = collapseCharacterMap.get(s.substring(0, 6));
-      if (replace != null) {
-        collapse += replace;
-      } else {
-        collapse += "!" + s.substring(0, 6) + "!";
-      }
+
+      // pad out to eight bits
+      String encode = String.format("00%s", (char) Integer.parseInt(s.substring(0, 6), 2));
+
+      // encode to base64
+      String encoded = new String(Base64.getEncoder().encode(encode.getBytes()));
+
+      // we only care about the final character (of four) after padding out
+      collapse += encoded.charAt(encoded.length() - 1);
+      
       s = s.substring(6);
      } 
      return collapse;
@@ -399,9 +334,5 @@ public class PatientCompare {
 
   public void setLastModifiedBy(String lastModifiedBy) {
     this.lastModifiedBy = lastModifiedBy;
-  }
-
-  public static Map<String, String> getCollapseCharacterMap() {
-    return Collections.unmodifiableMap(collapseCharacterMap);
   }
 }

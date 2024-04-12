@@ -1,10 +1,8 @@
 package org.immregistries.mismo.match.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Base64;
 import java.util.List;
-import java.util.Map;
-import org.immregistries.mismo.match.PatientCompare;
 
 public class ReverseSignatureUtil {
 
@@ -36,9 +34,21 @@ public class ReverseSignatureUtil {
 
   protected static String decodeBase64(String signaturePart) {
     String decoded = "";
+
     for (char c : signaturePart.toCharArray()) {
-      String decodedCharacter = expandCharacterMap.get(String.valueOf(c));
-      decoded += decodedCharacter;
+      // pad out base64
+      String preDecode = "AAA" + c;
+
+      // decode base64 to string
+      String decodedCharacter = new String(Base64.getDecoder().decode(preDecode.getBytes()));
+
+      // convert the final character to binary
+      String unpaddedBinary = Integer.toBinaryString(decodedCharacter.charAt(2));
+
+      // pad out the left side with zeroes
+      String paddedBinary = ("000000" + unpaddedBinary).substring(unpaddedBinary.length());
+
+      decoded += paddedBinary;
     }
     return decoded;
   }
@@ -55,19 +65,12 @@ public class ReverseSignatureUtil {
     }
   }
   
-  private static List<String> convertBinaryValuesToHexScores(List<String> binaries) {
+  protected static List<String> convertBinaryValuesToHexScores(List<String> binaries) {
     List<String> hexScores = new ArrayList<>();
     for (String binary : binaries) {
       int integerValue = Integer.parseInt(binary, 2);
       hexScores.add(Integer.toHexString(integerValue));
     }
     return hexScores;
-  }
-
-  private static final Map<String, String> expandCharacterMap = new HashMap<>();
-  static {
-    for (Map.Entry<String, String> entry : PatientCompare.getCollapseCharacterMap().entrySet()) {
-      expandCharacterMap.put(entry.getValue(), entry.getKey());
-    }
   }
 }

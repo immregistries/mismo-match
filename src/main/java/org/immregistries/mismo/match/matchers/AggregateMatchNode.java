@@ -3,7 +3,9 @@ package org.immregistries.mismo.match.matchers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.immregistries.mismo.match.StringUtils;
 import org.immregistries.mismo.match.model.Patient;
 
 /**
@@ -20,70 +22,6 @@ public class AggregateMatchNode extends MatchNode {
 
   protected int getLevel() {
     return level;
-  }
-
-  public String makeScript() {
-    StringBuilder sb = new StringBuilder(super.makeBasicScript());
-    for (MatchNode matcher : matchNodeList) {
-      sb.append("{");
-      if (matcher instanceof AggregateMatchNode) {
-        AggregateMatchNode agg = (AggregateMatchNode) matcher;
-        sb.append(agg.makeScript());
-      } else {
-        sb.append(matcher.makeBasicScript());
-      }
-      sb.append("}");
-    }
-    return sb.toString();
-  }
-
-  public void readScript(String script) {
-    readScript(script, 0);
-  }
-
-  public int readScript(String script, int pos) {
-    pos = super.readBasicScript(script, pos);
-    while (pos < script.length()) {
-      char nextChar = script.charAt(pos);
-      if (nextChar == '{') {
-        pos++;
-        int posColon = script.indexOf(':', pos);
-        if (posColon != -1) {
-          MatchNode selectedMatchNode = null;
-          String matchName = script.substring(pos, posColon);
-          for (MatchNode matchNode : matchNodeList) {
-            if (matchNode.getMatchName().equals(matchName)) {
-              selectedMatchNode = matchNode;
-              break;
-            }
-          }
-          if (selectedMatchNode != null) {
-            if (selectedMatchNode instanceof AggregateMatchNode) {
-              AggregateMatchNode agg = (AggregateMatchNode) selectedMatchNode;
-              pos = agg.readScript(script, pos);
-            } else {
-              pos = selectedMatchNode.readScript(script, pos);
-              int openBrace = 1;
-              while (openBrace > 0 && pos < script.length()) {
-                char c = script.charAt(pos);
-                if (c == '}') {
-                  openBrace--;
-                } else if (c == '{') {
-                  openBrace++;
-                }
-                pos++;
-              }
-            }
-          }
-        }
-      } else if (nextChar == '}') {
-        pos++;
-        return pos;
-      } else {
-        pos++;
-      }
-    }
-    return pos;
   }
 
   public AggregateMatchNode(String fieldName, double minScore, double maxScore) {
@@ -106,6 +44,31 @@ public class AggregateMatchNode extends MatchNode {
         if (disabled) {
           matchNode.setEnabled(false);
         } 
+      }
+    }
+  }
+
+  public void populateFieldSet(Set<String> patientFieldSet)
+  {
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode.isEnabled()) {
+        if (matchNode instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+          agg.populateFieldSet(patientFieldSet);
+        } else {
+          if (StringUtils.isNotEmpty(matchNode.getFieldName())) {
+            patientFieldSet.add(matchNode.getFieldName());
+          }
+          if (StringUtils.isNotEmpty(matchNode.getFieldName2())) {
+            patientFieldSet.add(matchNode.getFieldName2());
+          }
+          if (StringUtils.isNotEmpty(matchNode.getFieldName3())) {
+            patientFieldSet.add(matchNode.getFieldName3());
+          }
+          if (StringUtils.isNotEmpty(matchNode.getFieldNameOther())) {
+            patientFieldSet.add(matchNode.getFieldNameOther());
+          }
+        }
       }
     }
   }
@@ -142,51 +105,6 @@ public class AggregateMatchNode extends MatchNode {
       }
     }
     return (hash + super.hashCode()).hashCode();
-  }
-
-  @Override
-  public String getSignature(Patient patientA, Patient patientB) {
-    String signature = "(";
-    for (MatchNode matcher : matchNodeList) {
-      if (matcher instanceof AggregateMatchNode) {
-        AggregateMatchNode agg = (AggregateMatchNode) matcher;
-        signature += agg.getSignature(patientA, patientB);
-      } else {
-        signature += matcher.getSignature(patientA, patientB);
-      }
-    }
-    return signature + ")";
-  }
-
-  public String getSignature(Patient patientA, Patient patientB, int level) {
-    if (level == 0) {
-      return getSignature(patientA, patientB);
-    }
-    if (this.level <= level) {
-      double score = score(patientA, patientB);
-      if (score >= 0.9) {
-        return "A";
-      }
-      if (score >= 0.7) {
-        return "B";
-      }
-      if (score >= 0.5) {
-        return "C";
-      }
-      if (score >= 0.3) {
-        return "D";
-      }
-      return "E";
-    } else {
-      String signature = "";
-      for (MatchNode matcher : matchNodeList) {
-        if (matcher instanceof AggregateMatchNode) {
-          AggregateMatchNode agg = (AggregateMatchNode) matcher;
-          signature += agg.getSignature(patientA, patientB, level);
-        }
-      }
-      return signature;
-    }
   }
 
   @Override
@@ -335,20 +253,32 @@ public class AggregateMatchNode extends MatchNode {
     return sbuf.toString();
   }
 
-  public List<Double> getScoreList(Patient patientA, Patient patientB)
+  public void populateMatchNodeListAndScoreMap(Patient patientA, Patient patientB, List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
+    for (MatchNode matchNode : this.matchNodeList) {
+      if (matchNode.isEnabled()) {
+        if (matchNode instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+          agg.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+        } else {
+          matchNodeList.add(matchNode);
+          scoreMap.put(matchNode, matchNode.score(patientA, patientB));
+        }
+      }
+    }
+  }
+
+  public void populateScoreList(Patient patientA, Patient patientB, List<Double> scoreList)
   {
-    List<Double> scoreList = new ArrayList<Double>();
     for (MatchNode matchNode : matchNodeList) {
       if (matchNode.isEnabled()) {
         if (matchNode instanceof AggregateMatchNode) {
           AggregateMatchNode agg = (AggregateMatchNode) matchNode;
-          scoreList.addAll(agg.getScoreList(patientA, patientB));
+          agg.populateScoreList(patientA, patientB, scoreList);
         } else {
           scoreList.add(matchNode.score(patientA, patientB));
         }
       }
     }
-    return scoreList;
   }
 
   

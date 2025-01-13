@@ -19,7 +19,6 @@ public class PatientMatcher {
 
   public PatientMatchResult match(Patient patientA, Patient patientB) {
     PatientMatchResult patientMatchResult = new PatientMatchResult();
-    PatientCompare patientCompare = new PatientCompare();
     patientCompare.setPatientA(patientA);
     patientCompare.setPatientB(patientB);
     String result = patientCompare.getResult();

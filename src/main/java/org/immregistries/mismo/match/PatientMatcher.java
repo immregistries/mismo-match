@@ -31,6 +31,7 @@ public class PatientMatcher {
     }
     patientMatchResult.addMatchSignature(
         new MatchSignature(patientCompare.getSignature(), MatchSignatureType.PRIMARY));
+    patientCompare.clear();
     return patientMatchResult;
   }
 

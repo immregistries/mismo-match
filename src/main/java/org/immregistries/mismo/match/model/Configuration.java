@@ -63,10 +63,10 @@ public class Configuration {
         this.configurationScript = configurationScript;
     }
 
-    private int[][] scoringWeights = { /* Should Match*/  {  20,     0,   -5 }, 
-    /* Possible */   { -20,    10,    0 }, 
-    /* Not Match*/    { -40,   -10,   10 } };
-    
+    private int[][] scoringWeights = { /* Should Match */ { 20, 0, -5 },
+            /* Possible */ { -20, 10, 0 },
+            /* Not Match */ { -40, -10, 10 } };
+
     Map<String, Integer> scoringWeightsStrings = new HashMap<String, Integer>();
     {
         scoringWeightsStrings.put(SHOULD_MATCH_MATCHES, 20);
@@ -79,12 +79,12 @@ public class Configuration {
         scoringWeightsStrings.put(SHOULD_NO_MATCH_POSSIBLE, -10);
         scoringWeightsStrings.put(SHOULD_NO_MATCH_NO_MATCH, 10);
     }
-    
+
     private AggregateMatchNode match = null;
     private AggregateMatchNode notMatch = null;
     private AggregateMatchNode twin = null;
     private AggregateMatchNode missing = null;
-    
+
     public int getConfigurationId() {
         return configurationId;
     }
@@ -195,7 +195,6 @@ public class Configuration {
         this.scoringWeights = scoringWeights;
     }
 
-
     public Configuration() {
         configurationScriptRead = false;
     }
@@ -208,21 +207,18 @@ public class Configuration {
         readConfiguration(inputStream);
     }
 
-    public void setup()
-    {
+    public void setup() {
         if (StringUtils.isEmpty(configurationScript)) {
-            InputStream inputStream = getClass().getResourceAsStream("Configuration.yml");
+            InputStream inputStream = getClass().getResourceAsStream("/mismo-matcher.yml");
             readConfiguration(inputStream);
-        }
-        else {
+        } else {
             readConfiguration(configurationScript);
         }
         populateFieldSet();
         configurationScriptRead = true;
     }
 
-    private void populateFieldSet()
-    {
+    private void populateFieldSet() {
         patientFieldSet = new HashSet<String>();
         match.populateFieldSet(patientFieldSet);
         notMatch.populateFieldSet(patientFieldSet);
@@ -233,7 +229,7 @@ public class Configuration {
     private void readConfiguration(final String configurationScript) {
         // create input stream reader from string
         InputStream inputStream = new InputStream() {
-        private StringReader stringReader = new StringReader(configurationScript);
+            private StringReader stringReader = new StringReader(configurationScript);
 
             @Override
             public int read() {
@@ -246,7 +242,7 @@ public class Configuration {
         };
         readConfiguration(inputStream);
     }
-    
+
     private void readConfiguration(InputStream inputStream) {
         Yaml yaml = new Yaml(new Constructor(Map.class));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -257,8 +253,7 @@ public class Configuration {
         generationScore = (double) data.get("generationScore");
         if (data.get("generatedDate") instanceof Date) {
             generatedDate = (Date) data.get("generatedDate");
-        }
-        else {
+        } else {
             try {
                 generatedDate = sdf.parse((String) data.get("generatedDate"));
             } catch (Exception e) {
@@ -288,8 +283,7 @@ public class Configuration {
     }
 
     private AggregateMatchNode readAggregateMatchNode(String name, Map<String, Object> data) {
-        if (data == null)
-        {
+        if (data == null) {
             throw new RuntimeException("Unable to find matcher '" + name + "' in configuration file");
         }
         MatchNode matchNode = readMatchNode(name, data);
@@ -303,7 +297,8 @@ public class Configuration {
     private MatchNode readMatchNode(String name, Map<String, Object> data) {
         String label = (String) data.get("label");
         if (data.get("enabled") instanceof String) {
-            throw new RuntimeException("Unble to read 'enabled' value for '" + data.get("enabled")+ "' in configuration file");
+            throw new RuntimeException(
+                    "Unble to read 'enabled' value for '" + data.get("enabled") + "' in configuration file");
         }
         boolean enabled = (boolean) data.get("enabled");
         String detector = (String) data.get("detector");
@@ -311,8 +306,7 @@ public class Configuration {
         double maxScore = (double) data.get("maxScore");
 
         if (enabled) {
-            if (minScore <=0.0 && maxScore <= 0.0)
-            {
+            if (minScore <= 0.0 && maxScore <= 0.0) {
                 minScore = 0.0;
                 maxScore = 0.0;
                 enabled = false;
@@ -336,7 +330,7 @@ public class Configuration {
             String className = "org.immregistries.mismo.match.matchers." + detector;
             try {
                 // Specific MatchNode type
-                
+
                 Class<?> clazz = Class.forName(className);
                 matchNode = (MatchNode) clazz.getDeclaredConstructor().newInstance();
 
@@ -373,58 +367,56 @@ public class Configuration {
             AggregateMatchNode aggregateMatchNode = new AggregateMatchNode(label, minScore, maxScore);
             for (String key : data.keySet()) {
                 if (key.equals("label") || key.equals("enabled") || key.equals("detector") || key.equals("minScore")
-                || key.equals("maxScore")) {
+                        || key.equals("maxScore")) {
                     continue;
                 }
                 aggregateMatchNode.add(readMatchNode(key, (Map<String, Object>) data.get(key)));
             }
             matchNode = aggregateMatchNode;
         }
-        
+
         matchNode.setMatchName(name);
         matchNode.setMatchLabel(label);
         matchNode.setEnabled(enabled);
         matchNode.setMinScore(minScore);
         matchNode.setMaxScore(maxScore);
 
-
         return matchNode;
     }
 
-  private String makeHashForSignature() {
-    try {
-      return generateShortHash(configurationScript, 15);
+    private String makeHashForSignature() {
+        try {
+            return generateShortHash(configurationScript, 15);
+        } catch (NoSuchAlgorithmException e) {
+            return "!! UNABLE TO GENERATE HASH !! " + e.getMessage();
+        }
     }
-    catch (NoSuchAlgorithmException e) {
-      return "!! UNABLE TO GENERATE HASH !! " + e.getMessage();
+
+    private static String generateShortHash(String input, int length) throws NoSuchAlgorithmException {
+        if (length > 44) { // Base64-encoded SHA-256 strings are 44 characters long, so we limit the
+                           // length.
+            throw new IllegalArgumentException("Maximum length should be 44 or less.");
+        }
+        // Create a SHA-256 digest
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = digest.digest(input.getBytes());
+        // Encode the bytes to Base64
+        String base64Encoded = Base64.getEncoder().encodeToString(hashBytes);
+        // Truncate or pad the string to the specified length
+        return base64Encoded.length() > length ? base64Encoded.substring(0, length) : base64Encoded;
     }
-  }
 
-  private static String generateShortHash(String input, int length) throws NoSuchAlgorithmException {
-    if (length > 44) { // Base64-encoded SHA-256 strings are 44 characters long, so we limit the length.
-      throw new IllegalArgumentException("Maximum length should be 44 or less.");
-    }
-    // Create a SHA-256 digest
-    MessageDigest digest = MessageDigest.getInstance("SHA-256");
-    byte[] hashBytes = digest.digest(input.getBytes());
-    // Encode the bytes to Base64
-    String base64Encoded = Base64.getEncoder().encodeToString(hashBytes);
-    // Truncate or pad the string to the specified length
-      return base64Encoded.length() > length ? base64Encoded.substring(0, length) : base64Encoded;
-  }
-
-
-    public String toString()
-    {
+    public String toString() {
         return configurationScript;
     }
+
     public void createConfigurationScript() {
         StringBuilder sb = new StringBuilder();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sb.append("worldName: " + worldName + "\n");
-        sb.append("islandName: " + islandName + "\n"); 
+        sb.append("islandName: " + islandName + "\n");
         sb.append("generation: " + generation + "\n");
-        sb.append("generationScore: " + generationScore + "\n"); 
+        sb.append("generationScore: " + generationScore + "\n");
         sb.append("generatedDate: \"" + sdf.format(generatedDate) + "\"\n");
         sb.append("scoringWeights: " + "\n");
         sb.append("  " + SHOULD_MATCH_MATCHES + ": " + scoringWeights[0][0] + "\n");
@@ -445,11 +437,12 @@ public class Configuration {
         configurationScript = sb.toString();
     }
 
-    private void printAggregateMatchNode(String matchName, AggregateMatchNode matchNode, StringBuilder sb, String indent) {
+    private void printAggregateMatchNode(String matchName, AggregateMatchNode matchNode, StringBuilder sb,
+            String indent) {
         sb.append(indent + matchName + ":\n");
         sb.append(indent + "  label: " + matchNode.getMatchLabel() + "\n");
         sb.append(indent + "  enabled: " + matchNode.isEnabled() + "\n");
-        sb.append(indent + "  minScore: " + matchNode.getMinScore() + "\n");  
+        sb.append(indent + "  minScore: " + matchNode.getMinScore() + "\n");
         sb.append(indent + "  maxScore: " + matchNode.getMaxScore() + "\n");
         for (MatchNode mn : matchNode.getMatchNodeList()) {
             if (mn instanceof AggregateMatchNode) {
@@ -481,7 +474,7 @@ public class Configuration {
                 sb.append(indent + "    maxScore: " + mn.getMaxScore() + "\n");
             }
         }
-        
+
     }
 
 }

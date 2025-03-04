@@ -12,9 +12,9 @@ import org.immregistries.mismo.match.model.Configuration;
 import org.immregistries.mismo.match.model.MatchItem;
 import org.immregistries.mismo.match.model.Patient;
 
-
 /**
  * Holds all comparison nodes and provides support to give final result.
+ * 
  * @author Nathan Bunker
  *
  */
@@ -32,15 +32,21 @@ public class PatientCompare {
   private List<String> changeLogList = new ArrayList<>();
   Configuration configuration = new Configuration();
 
-  public Configuration getConfiguration()
-  {
+  public Configuration getConfiguration() {
     return configuration;
   }
 
-  protected List<Double> getScoreList()
-  {
+  public void printOut() {
+    match.printOut(patientA, patientB, "Ma ");
+    notMatch.printOut(patientA, patientB, "NM ");
+    twin.printOut(patientA, patientB, "Tw ");
+    missing.printOut(patientA, patientB, "Mi ");
+  }
+
+  public List<Double> getScoreList() {
     if (patientA == null || patientB == null) {
-      throw new IllegalArgumentException("Unable to get list of match notes and score map because patient A and patient B were not set");
+      throw new IllegalArgumentException(
+          "Unable to get list of match notes and score map because patient A and patient B were not set");
     }
     List<Double> scoreList = new ArrayList<>();
     match.populateScoreList(patientA, patientB, scoreList);
@@ -52,7 +58,8 @@ public class PatientCompare {
 
   public void populateMatchNodeListAndScoreMap(List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
     if (patientA == null || patientB == null) {
-      throw new IllegalArgumentException("Unable to get list of match notes and score map because patient A and patient B were not set");
+      throw new IllegalArgumentException(
+          "Unable to get list of match notes and score map because patient A and patient B were not set");
     }
     match.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
     notMatch.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
@@ -60,10 +67,7 @@ public class PatientCompare {
     missing.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
   }
 
-
-
-  public String getSignature()
-  {
+  public String getSignature() {
     StringBuilder sb = new StringBuilder();
     sb.append(configuration.getHashForSignature());
     List<Double> scoreList = getScoreList();
@@ -71,7 +75,7 @@ public class PatientCompare {
     String signature2 = "";
     String signature3 = "";
     String signature4 = "";
-    
+
     for (Double score : scoreList) {
       int scoreInt = (int) (score * 15);
       signature4 += scoreInt % 2;
@@ -89,13 +93,10 @@ public class PatientCompare {
     return sb.toString();
   }
 
-  protected static String collapse(String s)
-  {
+  protected static String collapse(String s) {
     String collapse = "";
-     while (s.length() > 0)
-     {
-      if (s.length() < 6)
-      {
+    while (s.length() > 0) {
+      if (s.length() < 6) {
         s = s + "000000";
         s = s.substring(0, 6);
       }
@@ -108,14 +109,15 @@ public class PatientCompare {
 
       // we only care about the final character (of four) after padding out
       collapse += encoded.charAt(encoded.length() - 1);
-      
+
       s = s.substring(6);
-     } 
-     return collapse;
+    }
+    return collapse;
   }
 
   /**
    * Not yet used, but could be used for recording ancestry information.
+   * 
    * @return
    */
   public String getAncestry() {
@@ -124,6 +126,7 @@ public class PatientCompare {
 
   /**
    * Not yet used, but could be used for recording ancestry information.
+   * 
    * @param ancestry
    */
   public void setAncestry(String ancestry) {
@@ -131,7 +134,7 @@ public class PatientCompare {
   }
 
   /**
-   * Creates default patient compare based off of the default script.    
+   * Creates default patient compare based off of the default script.
    */
   public PatientCompare() {
     match = configuration.getMatch();
@@ -140,8 +143,7 @@ public class PatientCompare {
     missing = configuration.getTwin();
   }
 
-  public PatientCompare(InputStream in)
-  {
+  public PatientCompare(InputStream in) {
     configuration = new Configuration(in);
     match = configuration.getMatch();
     notMatch = configuration.getNotMatch();
@@ -166,6 +168,7 @@ public class PatientCompare {
 
   /**
    * Sets the matchTestCase that contains the patient data that will be compared.
+   * 
    * @param matchItem
    */
   public void setMatchItem(MatchItem matchItem) {
@@ -175,7 +178,7 @@ public class PatientCompare {
   }
 
   /**
-   * Clears previously calculated results and matchTestCase.   
+   * Clears previously calculated results and matchTestCase.
    */
   public void clear() {
     patientA = null;
@@ -216,7 +219,7 @@ public class PatientCompare {
   /**
    * 
    * @return base twin node
-  */
+   */
   public AggregateMatchNode getTwin() {
     return twin;
   }
@@ -229,7 +232,8 @@ public class PatientCompare {
   }
 
   /**
-   * Evaluates the match set and returns verdict. 
+   * Evaluates the match set and returns verdict.
+   * 
    * @return "Match", "Possible Match" or "Not a Match"
    */
   public String getResult() {
@@ -259,7 +263,7 @@ public class PatientCompare {
   }
 
   /**
-   * @param missing  the missing node
+   * @param missing the missing node
    */
   public void setMissing(AggregateMatchNode missing) {
     this.missing = missing;
@@ -328,6 +332,7 @@ public class PatientCompare {
   public void setChangeLogList(List<String> changeLogList) {
     this.changeLogList = changeLogList;
   }
+
   public String getLastModifiedBy() {
     return lastModifiedBy;
   }

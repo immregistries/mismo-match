@@ -10,9 +10,10 @@ import org.immregistries.mismo.match.model.Patient;
 
 /**
  * This is a special sub class of MatchNode that is actually a collection
- * of other MatchNodes. It has all the same methods as a regular 
+ * of other MatchNodes. It has all the same methods as a regular
  * MatchNode but these aggregate the actions of all the subordinate
- * MatchNodes. 
+ * MatchNodes.
+ * 
  * @author Nathan Bunker
  *
  */
@@ -43,13 +44,12 @@ public class AggregateMatchNode extends MatchNode {
         }
         if (disabled) {
           matchNode.setEnabled(false);
-        } 
+        }
       }
     }
   }
 
-  public void populateFieldSet(Set<String> patientFieldSet)
-  {
+  public void populateFieldSet(Set<String> patientFieldSet) {
     for (MatchNode matchNode : matchNodeList) {
       if (matchNode.isEnabled()) {
         if (matchNode instanceof AggregateMatchNode) {
@@ -238,8 +238,7 @@ public class AggregateMatchNode extends MatchNode {
     return sbuf.toString();
   }
 
-  public String makeSetupYml()
-  {
+  public String makeSetupYml() {
     StringBuffer sbuf = new StringBuffer();
     for (MatchNode matchNode : matchNodeList) {
       if (matchNode instanceof AggregateMatchNode) {
@@ -253,7 +252,8 @@ public class AggregateMatchNode extends MatchNode {
     return sbuf.toString();
   }
 
-  public void populateMatchNodeListAndScoreMap(Patient patientA, Patient patientB, List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
+  public void populateMatchNodeListAndScoreMap(Patient patientA, Patient patientB, List<MatchNode> matchNodeList,
+      Map<MatchNode, Double> scoreMap) {
     for (MatchNode matchNode : this.matchNodeList) {
       if (matchNode.isEnabled()) {
         if (matchNode instanceof AggregateMatchNode) {
@@ -267,8 +267,7 @@ public class AggregateMatchNode extends MatchNode {
     }
   }
 
-  public void populateScoreList(Patient patientA, Patient patientB, List<Double> scoreList)
-  {
+  public void populateScoreList(Patient patientA, Patient patientB, List<Double> scoreList) {
     for (MatchNode matchNode : matchNodeList) {
       if (matchNode.isEnabled()) {
         if (matchNode instanceof AggregateMatchNode) {
@@ -281,6 +280,18 @@ public class AggregateMatchNode extends MatchNode {
     }
   }
 
-  
+  public void printOut(Patient patientA, Patient patientB, String pad) {
+    System.out.println(pad + matchName + ": " + score(patientA, patientB));
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode.isEnabled()) {
+        if (matchNode instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+          agg.printOut(patientA, patientB, pad + "  ");
+        } else {
+          matchNode.printOut(patientA, patientB, pad + "  ");
+        }
+      }
+    }
+  }
 
 }

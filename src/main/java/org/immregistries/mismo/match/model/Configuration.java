@@ -201,10 +201,14 @@ public class Configuration {
 
     public Configuration(final String configurationScript) {
         readConfiguration(configurationScript);
+        populateFieldSet();
+        configurationScriptRead = true;
     }
 
     public Configuration(InputStream inputStream) {
         readConfiguration(inputStream);
+        populateFieldSet();
+        configurationScriptRead = true;
     }
 
     public void setup() {

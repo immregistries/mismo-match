@@ -140,7 +140,7 @@ public class PatientCompare {
     match = configuration.getMatch();
     notMatch = configuration.getNotMatch();
     twin = configuration.getTwin();
-    missing = configuration.getTwin();
+    missing = configuration.getMissing();
   }
 
   public PatientCompare(InputStream in) {
@@ -148,7 +148,7 @@ public class PatientCompare {
     match = configuration.getMatch();
     notMatch = configuration.getNotMatch();
     twin = configuration.getTwin();
-    missing = configuration.getTwin();
+    missing = configuration.getMissing();
   }
 
   public PatientCompare(String configurationText) {
@@ -156,7 +156,7 @@ public class PatientCompare {
     match = configuration.getMatch();
     notMatch = configuration.getNotMatch();
     twin = configuration.getTwin();
-    missing = configuration.getTwin();
+    missing = configuration.getMissing();
   }
 
   public void disableMatchNodes(Map<String, Boolean> matchNodeMap) {

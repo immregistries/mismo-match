@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
 
+import org.immregistries.mismo.match.matchers.AggregateMatchNode;
 import org.immregistries.mismo.match.model.Configuration;
 import org.junit.Test;
 
@@ -34,6 +35,9 @@ public class ConfigurationTest {
             assertEquals(0.5976539440304252, configuration.getMatch().getMaxScore(), 0.0001);
             assertEquals("Household", configuration.getMatch().getMatchNodeList().get(0).getMatchName());
             assertEquals(0.5340047021220341, configuration.getMatch().getMatchNodeList().get(0).getMaxScore(), 0.0001);
+            assertEquals("Household", configuration.getMissing().getMatchNodeList().get(0).getMatchName());
+            assertEquals("L-missing", ((AggregateMatchNode) configuration.getMissing().getMatchNodeList().get(0)).getMatchNodeList().get(0).getMatchName());
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

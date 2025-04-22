@@ -51,21 +51,21 @@ Match:
         maxScore: 0.6
     Guardian:
       label: Guardian
-      enabled: false
+      enabled: true
       minScore: 0.0
       maxScore: 0.3
       GF-match:
         label: GF-match
         detector: ExactMatchNode
         fieldName: guardianNameFirst
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.5
       GL-match:
         label: GL-match
         detector: ExactMatchNode
         fieldName: guardianNameLast
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.46027300915789704
       GF-GL-match:
@@ -73,7 +73,7 @@ Match:
         detector: ExactMatchNode
         fieldName: guardianNameFirst
         fieldNameOther: guardianNameLast
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.5
       MM-match:
@@ -88,7 +88,7 @@ Match:
         detector: ExactMatchNode
         fieldName: motherMaidenName
         fieldNameOther: guardianNameLast
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.5
     Location:
@@ -106,19 +106,19 @@ Match:
       AD-match:
         label: AD-match
         detector: AddressMatchNode
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.7
       SA-match:
         label: SA-match
         detector: AddressStreetNameMatchNode
-        enabled: true
+        enabled: false
         minScore: 0.4559152605261425
         maxScore: 0.9673598834793466
       S-match:
         label: S-match
         detector: DoNotConflictMatchNode
-        enabled: true
+        enabled: false
         minScore: 0.0
         maxScore: 0.19119768322727826
   Person:
@@ -128,114 +128,114 @@ Match:
     maxScore: 0.6
     Patient Id:
       label: Patient Id
-      enabled: false
+      enabled: true
       minScore: 0.0
-      maxScore: 0.0
+      maxScore: 0.8
       MRN-match:
         label: MRN-match
         detector: AtLeastOneExactMatchNode
         fieldName: mrns
         splitParameter: "|"
-        enabled: false
+        enabled: true
         minScore: 0.008616028169453616
         maxScore: 0.9
       SSN-match:
         label: SSN-match
         detector: ExactMatchNode
         fieldName: ssn
-        enabled: false
-        minScore: 0.4762401412904794
+        enabled: true
+        minScore: 0.0
         maxScore: 0.7
       MA-match:
         label: MA-match
         detector: ExactMatchNode
         fieldName: medicaid
-        enabled: false
-        minScore: 0.2912968817242621
-        maxScore: 0.3854594836970239
+        enabled: true
+        minScore: 0.0
+        maxScore: 0.9
     First Name:
       label: First Name
       enabled: true
-      minScore: 0.022285108492698935
-      maxScore: 0.6539430754899886
+      minScore: 0.0
+      maxScore: 0.3
       F-match:
         label: F-match
         detector: ExactMatchNode
         fieldName: nameFirst
         enabled: true
-        minScore: 0.11714645904840293
-        maxScore: 0.9337334077507853
+        minScore: 0.0
+        maxScore: 0.9
       F-similar:
         label: F-similar
         detector: SimilarMatchNode
         fieldName: nameFirst
         enabled: true
         minScore: 0.0
-        maxScore: 0.12639866792151896
+        maxScore: 0.5
       F-middle:
         label: F-middle
         detector: ExactMatchNode
         fieldName: nameFirst
         fieldNameOther: nameMiddle
         enabled: true
-        minScore: 0.007532771294044394
-        maxScore: 0.3461773101772462
+        minScore: 0.0
+        maxScore: 0.4
       A-match:
         label: A-match
         detector: ExactMatchNode
         fieldName: nameFirst
         fieldNameOther: nameAlias
-        enabled: false
-        minScore: 0.16664034418411822
+        enabled: true
+        minScore: 0.0
         maxScore: 0.4
       G-match:
         label: G-match
         detector: ExactMatchNode
         fieldName: gender
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.1
     Birth Order:
       label: Birth Order
-      enabled: false
+      enabled: true
       minScore: 0.0
-      maxScore: 0.5488399547889631
+      maxScore: 0.1
       BO-matches:
         label: BO-matches
         detector: BirthOrderMatchNode
-        enabled: false
-        minScore: 0.012133046081512939
-        maxScore: 0.17056518914444302
+        enabled: true
+        minScore: 0.0
+        maxScore: 1.0
       MBS-no:
         label: MBS-no
         detector: BirthNotIndicatedMatchNode
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.5
     DOB:
       label: DOB
       enabled: true
-      minScore: 0.16099709260030182
+      minScore: 0.0
       maxScore: 0.4
       DOB-match:
         label: DOB-match
         detector: ExactMatchNode
         fieldName: birthDate
         enabled: true
-        minScore: 0.36096395805526216
+        minScore: 0.0
         maxScore: 1.0
       DOB-similar:
         label: DOB-similar
         detector: SimilarDateMatchNode
         fieldName: birthDate
         enabled: true
-        minScore: 0.12050050021621805
-        maxScore: 0.1428016622436511
+        minScore: 0.0
+        maxScore: 0.65
     Middle Name:
       label: Middle Name
       enabled: true
       minScore: 0.0
-      maxScore: 0.1097499668277081
+      maxScore: 0.3
       M-match:
         label: M-match
         detector: ExactMatchNode
@@ -249,33 +249,33 @@ Match:
         fieldName: nameMiddle
         enabled: true
         minScore: 0.0
-        maxScore: 0.11158025059378063
+        maxScore: 0.6
       M-similar:
         label: M-similar
         detector: SimilarMatchNode
         fieldName: nameMiddle
         enabled: true
         minScore: 0.0
-        maxScore: 0.05221669388457371
+        maxScore: 0.6
       S-match:
         label: S-match
         detector: DoNotConflictMatchNode
         fieldName: nameSuffix
-        enabled: false
+        enabled: true
         minScore: 0.0
-        maxScore: 0.17339445105215423
+        maxScore: 0.1
     Shot History:
       label: Shot History
-      enabled: false
+      enabled: true
       minScore: 0.0
       maxScore: 0.2
       SH-match:
         label: SH-match
         detector: HistoryMatchNode
         fieldName: shotHistory
-        enabled: false
+        enabled: true
         minScore: 0.0
-        maxScore: 0.8434711196989159
+        maxScore: 0.1
 Not Match:
   label: Not Match
   enabled: true
@@ -317,7 +317,7 @@ Not Match:
         maxScore: 0.6
     Guardian:
       label: Guardian
-      enabled: false
+      enabled: true
       minScore: 0.12543614754336277
       maxScore: 0.3
       GF-not-match:
@@ -325,7 +325,7 @@ Not Match:
         detector: ExactMatchNode
         fieldName: guardianNameFirst
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0038207325234260736
         maxScore: 0.8772890703808285
       GL-not-match:
@@ -333,7 +333,7 @@ Not Match:
         detector: ExactMatchNode
         fieldName: guardianNameLast
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.5
       MM-not-match:
@@ -350,8 +350,8 @@ Not Match:
         fieldName: motherMaidenName
         not: false
         enabled: true
-        minScore: 0.0
-        maxScore: 0.5
+        minScore: 0.2699050811578392
+        maxScore: 0.530906191802011
     Location:
       label: Location
       enabled: true
@@ -369,40 +369,40 @@ Not Match:
         label: AD-not-match
         detector: AddressMatchNode
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.9
       SA-not-match:
         label: SA-match
         detector: AddressStreetNameMatchNode
         not: true
-        enabled: true
+        enabled: false
         minScore: 0.0920940731120864
         maxScore: 0.6625441818813038
       S-not-match:
         label: S-match
         detector: DoNotConflictMatchNode
         not: true
-        enabled: true
+        enabled: false
         minScore: 0.2619251366713534
         maxScore: 0.3
   Person:
     label: Person
     enabled: true
     minScore: 0.0
-    maxScore: 0.1761757252522036
+    maxScore: 0.6
     Patient Id:
       label: Patient Id
-      enabled: false
+      enabled: true
       minScore: 0.0
-      maxScore: 0.4864546336460728
+      maxScore: 0.8
       MRN-not-match:
         label: MRN-not-match
         detector: AtLeastOneExactMatchNode
         fieldName: mrns
         splitParameter: "|"
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.05
       SSN-not-match:
@@ -410,29 +410,29 @@ Not Match:
         detector: ExactMatchNode
         fieldName: ssn
         not: true
-        enabled: false
-        minScore: 0.24338815020508475
-        maxScore: 0.9448590837670895
+        enabled: true
+        minScore: 0.0
+        maxScore: 0.9
       MA-not-match:
         label: MA-not-match
         detector: ExactMatchNode
         fieldName: medicaid
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0
-        maxScore: 0.8879184240368448
+        maxScore: 0.6
     First Name:
       label: First Name
       enabled: true
-      minScore: 0.010349465858667473
-      maxScore: 0.5803199159650172
+      minScore: 0.0
+      maxScore: 0.3
       F-not-match:
         label: F-not-match
         detector: ExactMatchNode
         fieldName: nameFirst
         not: true
         enabled: true
-        minScore: 0.2159008837549209
+        minScore: 0.0
         maxScore: 0.3
       F-not-similar:
         label: F-not-similar
@@ -440,7 +440,7 @@ Not Match:
         fieldName: nameFirst
         not: true
         enabled: true
-        minScore: 0.05010846114037204
+        minScore: 0.0
         maxScore: 0.3
       F-not-middle:
         label: F-not-middle
@@ -448,62 +448,70 @@ Not Match:
         fieldName: nameMiddle
         not: true
         enabled: true
-        minScore: 0.028499922506510345
-        maxScore: 0.2841023560998641
+        minScore: 0.0
+        maxScore: 0.0
       A-not-match:
         label: A-not-match
         detector: ExactMatchNode
         fieldName: nameAlias
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.0
-    Gender:
-      label: Gender
-      enabled: true
-      minScore: 0.0
-      maxScore: 0.9851122869818935
       G-not-match:
         label: G-not-match
         detector: ExactMatchNode
         fieldName: gender
         not: true
-        enabled: false
+        enabled: true
+        minScore: 0.0
+        maxScore: 0.1
+    Gender:
+      label: Gender
+      enabled: true
+      minScore: 0.0
+      maxScore: 0.4
+      G-not-match:
+        label: G-not-match
+        detector: ExactMatchNode
+        fieldName: gender
+        not: true
+        enabled: true
         minScore: 0.0
         maxScore: 0.0
     DOB:
       label: DOB
       enabled: true
-      minScore: 0.008017702745740651
-      maxScore: 0.12408413338661316
+      minScore: 0.0
+      maxScore: 0.4
       DOB-not-match:
         label: DOB-not-match
         detector: ExactMatchNode
         fieldName: birthDate
         not: true
         enabled: true
-        minScore: 0.2683494770446756
-        maxScore: 0.7785390891446896
+        minScore: 0.0
+        maxScore: 1.0
       DOB-not-similar:
         label: DOB-not-similar
         detector: SimilarDateMatchNode
         fieldName: birthDate
         not: true
         enabled: true
-        minScore: 0.035384086215674015
-        maxScore: 0.8043120733536863
+        minScore: 0.0
+        maxScore: 0.65
     Middle Name:
       label: Middle Name
       enabled: true
-      minScore: 0.7527277958973195
-      maxScore: 0.9194439329366614
+      minScore: 0.0
+      maxScore: 0.3
       M-not-match:
         label: M-not-match
         detector: ExactMatchNode
         fieldName: nameMiddle
         not: true
         enabled: true
-        minScore: 0.4750592342546145
+        minScore: 0.0
         maxScore: 1.0
       M-not-initial:
         label: M-not-initial
@@ -511,15 +519,15 @@ Not Match:
         fieldName: nameMiddle
         not: true
         enabled: true
-        minScore: 0.0631956946954324
-        maxScore: 0.9979020506695768
+        minScore: 0.0
+        maxScore: 0.6
       M-not-similar:
         label: M-not-similar
         detector: SimilarMatchNode
         fieldName: nameMiddle
         not: true
         enabled: true
-        minScore: 0.04038705921822772
+        minScore: 0.0
         maxScore: 0.6
       S-not-match:
         label: S-not-match
@@ -531,7 +539,7 @@ Not Match:
         maxScore: 0.1
     Shot History:
       label: Shot History
-      enabled: false
+      enabled: true
       minScore: 0.0
       maxScore: 0.2
       SH-not-match:
@@ -539,9 +547,9 @@ Not Match:
         detector: HistoryMatchNode
         fieldName: shotHistory
         not: true
-        enabled: false
+        enabled: true
         minScore: 0.0
-        maxScore: 0.31664212470651
+        maxScore: 0.1
 Twin:
   label: Suspect Twin
   enabled: true
@@ -683,7 +691,7 @@ Missing:
         fieldName: addressStreet2
         fieldName2: address2Street2
         fieldName3: address3Street2
-        enabled: false
+        enabled: true
         minScore: 0.0
         maxScore: 0.0
       AC-missing:
@@ -734,16 +742,16 @@ Missing:
         label: SSN-missing
         detector: MissingMatchNode
         fieldName: ssn
-        enabled: true
+        enabled: false
         minScore: 0.0
-        maxScore: 0.4
+        maxScore: 0.0
       MA-missing:
         label: MA-missing
         detector: MissingMatchNode
         fieldName: medicaid
-        enabled: true
+        enabled: false
         minScore: 0.0
-        maxScore: 0.4
+        maxScore: 0.0
     First Name:
       label: First Name
       enabled: true
@@ -821,6 +829,6 @@ Missing:
       label: SH-missing
       detector: MissingMatchNode
       fieldName: shotHistory
-      enabled: false
+      enabled: true
       minScore: 0.0
       maxScore: 0.2

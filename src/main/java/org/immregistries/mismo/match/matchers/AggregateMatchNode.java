@@ -1,6 +1,7 @@
 package org.immregistries.mismo.match.matchers;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -275,6 +276,21 @@ public class AggregateMatchNode extends MatchNode {
           agg.populateScoreList(patientA, patientB, scoreList);
         } else {
           scoreList.add(matchNode.score(patientA, patientB));
+        }
+      }
+    }
+  }
+
+  public void populateScoreFromSignature(Deque<Double> scoreFromSignatureDequeue) {
+    for (MatchNode matchNode : matchNodeList) {
+      if (matchNode.isEnabled()) {
+        if (matchNode instanceof AggregateMatchNode) {
+          AggregateMatchNode agg = (AggregateMatchNode) matchNode;
+          agg.populateScoreFromSignature(scoreFromSignatureDequeue);
+        } else {
+          if (!scoreFromSignatureDequeue.isEmpty()) {
+            matchNode.setScoreFromSignature(scoreFromSignatureDequeue.removeFirst());
+          }
         }
       }
     }

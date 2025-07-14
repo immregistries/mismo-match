@@ -25,6 +25,15 @@ public abstract class MatchNode {
   protected String fieldName3 = "";
   protected String fieldNameOther = null;
   protected String splitParameter = "";
+  protected double scoreFromSignature = 0.0;
+
+  public double getScoreFromSignature() {
+    return scoreFromSignature;
+  }
+
+  public void setScoreFromSignature(double signatureScore) {
+    this.scoreFromSignature = signatureScore;
+  }
 
   public void printOut(Patient patientA, Patient patientB, String pad) {
     System.out.println(pad + matchName + ": " + score(patientA, patientB));
@@ -257,6 +266,11 @@ public abstract class MatchNode {
    */
   public double weightScore(Patient patientA, Patient patientB) {
     return score(patientA, patientB) * (maxScore - minScore) + minScore;
+  }
+
+  public double weightScoreFromSignaturer() {
+    return scoreFromSignature * (maxScore - minScore) + minScore;
+
   }
 
   /**

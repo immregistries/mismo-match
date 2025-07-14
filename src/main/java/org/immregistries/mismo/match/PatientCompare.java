@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
@@ -11,6 +13,7 @@ import org.immregistries.mismo.match.matchers.MatchNode;
 import org.immregistries.mismo.match.model.Configuration;
 import org.immregistries.mismo.match.model.MatchItem;
 import org.immregistries.mismo.match.model.Patient;
+import org.immregistries.mismo.match.util.ReverseSignatureUtil;
 
 /**
  * Holds all comparison nodes and provides support to give final result.
@@ -56,6 +59,14 @@ public class PatientCompare {
     return scoreList;
   }
 
+  private void setScoreFromSignature(List<Double> scoreFromSignatureList) {
+    Deque<Double> scoreFromSignatureDequeue = new LinkedList<Double>(scoreFromSignatureList);
+    match.populateScoreFromSignature(scoreFromSignatureDequeue);
+    notMatch.populateScoreFromSignature(scoreFromSignatureDequeue);
+    twin.populateScoreFromSignature(scoreFromSignatureDequeue);
+    missing.populateScoreFromSignature(scoreFromSignatureDequeue);
+  }
+
   public void populateMatchNodeListAndScoreMap(List<MatchNode> matchNodeList, Map<MatchNode, Double> scoreMap) {
     if (patientA == null || patientB == null) {
       throw new IllegalArgumentException(
@@ -65,6 +76,30 @@ public class PatientCompare {
     notMatch.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
     twin.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
     missing.populateMatchNodeListAndScoreMap(patientA, patientB, matchNodeList, scoreMap);
+  }
+
+  private List<Double> scoreFromSignatureList = null;
+
+  public List<Double> getScoreFromSignatureList() {
+    return scoreFromSignatureList;
+  }
+
+  public void setSignature(String signature) {
+    List<String> hex = ReverseSignatureUtil.reverseSignatureIntoHexScores(signature);
+    scoreFromSignatureList = new ArrayList<>();
+    for (String hexScore : hex) {
+      int score = Integer.parseInt(hexScore, 16);
+      double scoreDouble;
+      if (score == 15) {
+        scoreDouble = 1.0;
+      } else if (score == 0) {
+        scoreDouble = 0.0;
+      } else {
+        scoreDouble = (score + 0.5) / 15.0;
+      }
+      scoreFromSignatureList.add(scoreDouble);
+    }
+    setScoreFromSignature(scoreFromSignatureList);
   }
 
   public String getSignature() {

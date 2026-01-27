@@ -297,7 +297,7 @@ public class AggregateMatchNode extends MatchNode {
   }
 
   public void printOut(Patient patientA, Patient patientB, String pad) {
-    System.out.println(pad + getMatchName() + ": " + score(patientA, patientB));
+//    System.out.println(pad + matchName + ": " + score(patientA, patientB));
     for (MatchNode matchNode : matchNodeList) {
       if (matchNode.isEnabled()) {
         if (matchNode instanceof AggregateMatchNode) {

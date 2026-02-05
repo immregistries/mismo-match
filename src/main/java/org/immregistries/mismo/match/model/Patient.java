@@ -36,6 +36,12 @@ public class Patient {
       }
     }
   }
+
+  public Patient(Map<String, String> values) {
+    if (values != null) {
+      valueMap = new HashMap<>(values);
+    }
+  }
   
   private int patientId = 0;
   private Patient linkWith = null;

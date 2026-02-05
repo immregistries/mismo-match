@@ -49,22 +49,6 @@ Match:
         enabled: true
         minScore: 0.0
         maxScore: 0.6
-      L-first:
-        label: L-first
-        detector: ExactMatchNode
-        fieldName: nameLast
-        fieldNameOther: nameFirst
-        enabled: true
-        minScore: 0.0
-        maxScore: 0.5
-      L-middle:
-        label: L-middle
-        detector: ExactMatchNode
-        fieldName: nameLast
-        fieldNameOther: nameMiddle
-        enabled: true
-        minScore: 0.0
-        maxScore: 0.5
     Guardian:
       label: Guardian
       enabled: false
@@ -165,13 +149,6 @@ Match:
       F-match:
         label: F-match
         detector: ExactMatchNode
-        fieldName: nameFirst
-        enabled: true
-        minScore: 0.0
-        maxScore: 0.9
-      F-sameButOne:
-        label: F-match
-        detector: OneTypoMatchNode
         fieldName: nameFirst
         enabled: true
         minScore: 0.0
@@ -326,24 +303,6 @@ Not Match:
         enabled: true
         minScore: 0.0
         maxScore: 0.6
-      L-not-first:
-        label: L-not-first
-        detector: ExactMatchNode
-        fieldName: nameLast
-        fieldNameOther: nameFirst
-        not: true
-        enabled: true
-        minScore: 0.0
-        maxScore: 0.5
-      L-not-middle:
-        label: L-not-middle
-        detector: ExactMatchNode
-        fieldName: nameLast
-        fieldNameOther: nameMiddle
-        not: true
-        enabled: true
-        minScore: 0.0
-        maxScore: 0.5
     Guardian:
       label: Guardian
       enabled: false
@@ -369,7 +328,7 @@ Not Match:
         label: MM-not-match
         detector: ExactMatchNode
         fieldName: motherMaidenName
-        not: true
+        not: false
         enabled: true
         minScore: 0.0
         maxScore: 0.5
@@ -377,7 +336,7 @@ Not Match:
         label: MM-not-similar
         detector: SimilarMatchNode
         fieldName: motherMaidenName
-        not: true
+        not: false
         enabled: true
         minScore: 0.0
         maxScore: 0.5

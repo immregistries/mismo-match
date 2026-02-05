@@ -1,6 +1,5 @@
 package org.model;
 
-
 import org.immregistries.mismo.match.matchers.AggregateMatchNode;
 import org.immregistries.mismo.match.matchers.ExactMatchNode;
 import org.immregistries.mismo.match.matchers.MissingMatchNode;
@@ -9,15 +8,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-
 public class ConfigurationTest {
 
     @Test
-    public void testInit()
-    {
+    public void testInit() {
         Configuration configuration = new Configuration();
         configuration.setup();
-        assertEquals("Alma", configuration.getWorldName());    
+        assertEquals("Alma", configuration.getWorldName());
         assertEquals("Alpha", configuration.getIslandName());
         assertEquals(1, configuration.getGeneration());
         assertEquals(0.0, configuration.getGenerationScore(), 0.01);
@@ -44,17 +41,17 @@ public class ConfigurationTest {
         AggregateMatchNode householdMatchNode = (AggregateMatchNode) configuration.getMatch().getMatchNodeList().get(0);
         assertEquals("Household", householdMatchNode.getMatchName());
         assertEquals(true, householdMatchNode.isEnabled());
-        assertEquals(0.0 , householdMatchNode.getMinScore(), 0.01);
-        assertEquals(0.4 , householdMatchNode.getMaxScore(), 0.01);
+        assertEquals(0.0, householdMatchNode.getMinScore(), 0.01);
+        assertEquals(0.4, householdMatchNode.getMaxScore(), 0.01);
         AggregateMatchNode personMatchNode = (AggregateMatchNode) configuration.getMatch().getMatchNodeList().get(1);
         assertEquals("Person", personMatchNode.getMatchName());
         assertEquals(3, householdMatchNode.getMatchNodeList().size());
         AggregateMatchNode lastNameMatchNode = (AggregateMatchNode) householdMatchNode.getMatchNodeList().get(0);
         assertEquals("Last Name", lastNameMatchNode.getMatchName());
         assertEquals(true, lastNameMatchNode.isEnabled());
-        assertEquals(0.0 , lastNameMatchNode.getMinScore(), 0.01);
-        assertEquals(0.4 , lastNameMatchNode.getMaxScore(), 0.01);
-        assertEquals(3, lastNameMatchNode.getMatchNodeList().size());
+        assertEquals(0.0, lastNameMatchNode.getMinScore(), 0.01);
+        assertEquals(0.4, lastNameMatchNode.getMaxScore(), 0.01);
+        assertEquals(5, lastNameMatchNode.getMatchNodeList().size());
         ExactMatchNode lMatchNode = (ExactMatchNode) lastNameMatchNode.getMatchNodeList().get(0);
         assertEquals("L-match", lMatchNode.getMatchName());
         assertEquals(0.0, lMatchNode.getMinScore(), 0.01);
@@ -68,13 +65,14 @@ public class ConfigurationTest {
         assertEquals(0.0, lHyphenatedNode.getMinScore(), 0.01);
         assertEquals(0.6, lHyphenatedNode.getMaxScore(), 0.01);
         assertEquals("Missing", configuration.getMissing().getMatchName());
-        AggregateMatchNode householdMissingNode = (AggregateMatchNode) configuration.getMissing().getMatchNodeList().get(0);
+        AggregateMatchNode householdMissingNode = (AggregateMatchNode) configuration.getMissing().getMatchNodeList()
+                .get(0);
         assertNotNull(householdMissingNode);
         assertEquals("Household", householdMissingNode.getMatchName());
         assertEquals(3, householdMissingNode.getMatchNodeList().size());
         AggregateMatchNode locationMissingNode = (AggregateMatchNode) householdMissingNode.getMatchNodeList().get(2);
         assertEquals("Location", locationMissingNode.getMatchName());
-        assertEquals(6, locationMissingNode.getMatchNodeList().size()); 
+        assertEquals(6, locationMissingNode.getMatchNodeList().size());
         MissingMatchNode missingMatchNode = (MissingMatchNode) locationMissingNode.getMatchNodeList().get(1);
         assertNotNull(missingMatchNode);
         assertEquals("AS1-missing", missingMatchNode.getMatchName());

@@ -27,6 +27,10 @@ public abstract class MatchNode {
   protected String splitParameter = "";
   protected double scoreFromSignature = 0.0;
 
+  protected boolean hasFieldNameOther() {
+    return fieldNameOther != null && fieldNameOther.length() > 0;
+  }
+
   public double getScoreFromSignature() {
     return scoreFromSignature;
   }

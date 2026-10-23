@@ -102,7 +102,7 @@ public class PatientCompareTest {
             1.00, 1.00, 0.56, 1.00, 0.00, 1.00, 0.56, 1.00, 0.00);
       }
     };
-    assertEquals("ehgQqWjs4Ax1QZc:AITy+4:Qo7iao:Qo7iao:QIbiao", compare.getSignature());
+    assertEquals("Qds4KpMKC78aDNQ:AITy+4:Qo7iao:Qo7iao:QIbiao", compare.getSignature());
 
     compare = new PatientCompare() {
       @Override
@@ -112,7 +112,7 @@ public class PatientCompareTest {
             0.00, 0.00, 0.50, 0.00, 1.00, 0.00, 0.50, 0.00, 1.00);
       }
     };
-    assertEquals("ehgQqWjs4Ax1QZc:/3sNBE:vXEdlU:vXEdlU:v3kdlU", compare.getSignature());
+    assertEquals("Qds4KpMKC78aDNQ:/3sNBE:vXEdlU:vXEdlU:v3kdlU", compare.getSignature());
 
     compare = new PatientCompare() {
       @Override
@@ -122,6 +122,6 @@ public class PatientCompareTest {
             1.00, 1.00, 0.45, 1.00, 0.00, 1.00, 0.45, 1.00, 0.00);
       }
     };
-    assertEquals("ehgQqWjs4Ax1QZc:gphiao:gJBye4:gJhy+4:gJhi6o", compare.getSignature());
+    assertEquals("Qds4KpMKC78aDNQ:gphiao:gJBye4:gJhy+4:gJhi6o", compare.getSignature());
   }
 }

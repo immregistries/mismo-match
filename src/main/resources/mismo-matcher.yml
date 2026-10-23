@@ -170,7 +170,7 @@ Match:
         minScore: 0.0
         maxScore: 0.9
       F-sameButOne:
-        label: F-match
+        label: F-sameButOne
         detector: OneTypoMatchNode
         fieldName: nameFirst
         enabled: true

@@ -213,6 +213,17 @@ public class PatientCompare {
   }
 
   /**
+   * Compares two already-parsed patients, skipping the parse that {@link #setMatchItem} does.
+   * The patients are only read, so one pair may be compared by many {@code PatientCompare}
+   * instances at once, provided each was prepared with {@link Patient#prepareForSharing()}.
+   */
+  public void setPatients(Patient patientA, Patient patientB) {
+    this.patientA = patientA;
+    this.patientB = patientB;
+    result = null;
+  }
+
+  /**
    * Clears previously calculated results and matchTestCase.
    */
   public void clear() {

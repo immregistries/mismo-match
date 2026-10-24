@@ -85,6 +85,21 @@ public class Patient {
   private Address address2 = null;
   private Address address3 = null;
 
+  /**
+   * Builds the parsed addresses now instead of on first read, so that afterwards reading this
+   * patient never changes it. Call this before sharing one patient between several
+   * {@code PatientCompare} instances or threads (for example, an optimizer scoring many
+   * configurations against the same test cases), and don't call any setter afterwards.
+   *
+   * @return this patient
+   */
+  public Patient prepareForSharing() {
+    getAddress1();
+    getAddress2();
+    getAddress3();
+    return this;
+  }
+
   public Address getAddress1() {
     if (address1 == null)
     {

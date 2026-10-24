@@ -3,6 +3,10 @@ islandName: Alpha
 generation: 1
 generationScore: 0.0
 generatedDate: "2024-04-03 12:00:00"
+# These weights are the optimizer's fitness function. The values are deliberate: they serve the
+# national measurement objective, which treats Match and Possible Match as one "potential match"
+# signal. They are not a production-calibration matrix and should not be "fixed" to look like one.
+# See mismo-trainer docs/optimization-objectives-and-scoring-profiles.md before changing them.
 scoringWeights:
   shouldMatch_Matches: 12
   shouldMatch_Possible: 10

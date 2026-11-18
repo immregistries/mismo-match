@@ -168,35 +168,64 @@ public class AggregateMatchNode extends MatchNode {
     }
   }
 
-  public void clone(AggregateMatchNode clone) {
-    super.clone(clone);
-    for (MatchNode matchNode : matchNodeList) {
-      if (matchNode instanceof AggregateMatchNode) {
-        AggregateMatchNode agg = (AggregateMatchNode) matchNode;
-        agg.clone(clone);
+  /**
+   * Copies genetic values from corresponding nodes of a compatible tree.
+   * Patient comparison and configuration serialization are not changed.
+   */
+  public void clone(AggregateMatchNode source) {
+    if (!hasSameStructure(source)) {
+      throw new IllegalArgumentException("Cannot clone incompatible matcher trees");
+    }
+    super.clone(source);
+    for (int i = 0; i < matchNodeList.size(); i++) {
+      MatchNode targetChild = matchNodeList.get(i);
+      MatchNode sourceChild = source.matchNodeList.get(i);
+      if (targetChild instanceof AggregateMatchNode) {
+        ((AggregateMatchNode) targetChild).clone((AggregateMatchNode) sourceChild);
       } else {
-        matchNode.clone(clone);
+        targetChild.clone(sourceChild);
       }
     }
   }
 
-  public boolean isSame(AggregateMatchNode potentialMate) {
-    if (!super.isSame(potentialMate)) {
+  /** Compares corresponding genetic values; this is not detector-definition equality. */
+  public boolean isSame(AggregateMatchNode other) {
+    if (!hasSameStructure(other) || !super.isSame(other)) {
       return false;
     }
-    for (MatchNode matchNode : matchNodeList) {
-      if (matchNode instanceof AggregateMatchNode) {
-        AggregateMatchNode agg = (AggregateMatchNode) matchNode;
-        if (!agg.isSame(potentialMate)) {
+    for (int i = 0; i < matchNodeList.size(); i++) {
+      MatchNode child = matchNodeList.get(i);
+      MatchNode otherChild = other.matchNodeList.get(i);
+      if (child instanceof AggregateMatchNode) {
+        if (!((AggregateMatchNode) child).isSame((AggregateMatchNode) otherChild)) {
           return false;
         }
-      }
-      if (!matchNode.isSame(potentialMate)) {
+      } else if (!child.isSame(otherChild)) {
         return false;
       }
     }
     return true;
   }
+
+  private boolean hasSameStructure(AggregateMatchNode other) {
+    if (other == null || getClass() != other.getClass()
+        || matchNodeList.size() != other.matchNodeList.size()) {
+      return false;
+    }
+    for (int i = 0; i < matchNodeList.size(); i++) {
+      MatchNode child = matchNodeList.get(i);
+      MatchNode otherChild = other.matchNodeList.get(i);
+      if (child.getClass() != otherChild.getClass()) {
+        return false;
+      }
+      if (child instanceof AggregateMatchNode
+          && !((AggregateMatchNode) child).hasSameStructure((AggregateMatchNode) otherChild)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 
   public void mutate(int generation) {
     super.mutate(generation);
